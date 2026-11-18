@@ -195,6 +195,21 @@ export interface Dictionary {
     description: string;
     backHome: string;
   };
+  whatsapp: {
+    fabLabel: string;
+    fabShort: string;
+    closeLabel: string;
+    title: string;
+    subtitle: string;
+    welcomeText: string;
+    intentInquiry: string;
+    intentFifth: string;
+    intentNasr: string;
+    noteLabel: string;
+    notePlaceholder: string;
+    startChat: string;
+    orBookOnline: string;
+  };
 }
 
 export const DICTIONARIES: Record<Locale, Dictionary> = {
@@ -210,7 +225,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       about: 'من نحن',
       services: 'الخدمات',
       pages: 'الأقسام',
-      doctors: 'الأطباء',
+      doctors: 'الطبيب المختص',
       gallery: 'معرض الابتسامات',
       technology: 'التقنيات الطبية',
       testimonials: 'آراء المرضى',
@@ -232,7 +247,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       primaryCta: 'احجز موعدك الآن',
       secondaryCta: 'اكتشف خدماتنا',
       bottomSloganLabel: 'ابتسامتك مصدر سعادتنا، خلّينا نحافظ على إشراقها.',
-      floatingDoctorBadge: 'فريق استشاريي نوفا',
+      floatingDoctorBadge: 'طبيب الأسنان المختص',
     },
     ctaStrip: {
       callTitle: 'تواصل معنا مباشرة',
@@ -360,13 +375,13 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       cta: 'احجز موعدك الآن',
     },
     teamSection: {
-      kicker: 'الفريق الطبي',
-      headingPrefix: 'نخبة أطباء',
+      kicker: 'الطبيب المختص',
+      headingPrefix: 'طبيب عيادة',
       headingAccent: 'نوفا لطب الأسنان',
       subtitle:
-        'فريق متخصص يحرص على راحتك وجودة النتيجة الطبية في كل تخصص من تخصصات طب الأسنان.',
-      viewAll: 'عرض جميع الأطباء',
-      bookDoctor: 'احجز مع الطبيب',
+        'رعاية متخصصة في تجميل وزراعة وعلاج الأسنان بأحدث التقنيات الرقمية في فرعي التجمع الخامس ومدينة نصر.',
+      viewAll: 'عرض الملف الطبي',
+      bookDoctor: 'احجز موعدك الآن',
       viewProfile: 'عرض الملف الطبي',
     },
     testimonialsSection: {
@@ -421,7 +436,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       branchLabel: 'مقر العيادة',
       serviceLabel: 'الخدمة الطبية المطلوبة',
       doctorLabel: 'الطبيب المختص',
-      anyDoctor: 'أول طبيب متخصص متاح',
+      anyDoctor: 'الموعد المتاح بالعيادة',
       dateLabel: 'تاريخ الموعد',
       timeLabel: 'الساعة المتاحة',
       loadingSlots: 'جاري تحديث المواعيد...',
@@ -468,6 +483,22 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       description: 'يبدو أن الرابط الذي تحاول الوصول إليه غير متاح أو تم نقله. يمكنك العودة إلى الصفحة الرئيسية أو حجز موعد مباشرة.',
       backHome: 'العودة للرئيسية',
     },
+    whatsapp: {
+      fabLabel: 'فتح محادثة واتساب للاستفسار أو حجز موعد',
+      fabShort: 'تواصل واتساب',
+      closeLabel: 'إغلاق نافذة واتساب',
+      title: 'واتساب عيادة نوفا',
+      subtitle: 'للاستفسارات الفورية وحجز المواعيد',
+      welcomeText:
+        'أهلاً بك في NOVA Dental Clinic. اختر نوع التواصل أو اكتب سؤالك وسنرد عليك مباشرة عبر واتساب.',
+      intentInquiry: 'استفسار طبي عام',
+      intentFifth: 'حجز موعد — التجمع الخامس',
+      intentNasr: 'حجز موعد — مدينة نصر',
+      noteLabel: 'رسالتك (اختياري)',
+      notePlaceholder: 'مثال: أرغب في الاستفسار عن الفينيرز أو حجز كشف...',
+      startChat: 'بدء المحادثة عبر واتساب',
+      orBookOnline: 'أو احجز موعدك إلكترونياً',
+    },
   },
   en: {
     meta: {
@@ -481,7 +512,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       about: 'About Us',
       services: 'Services',
       pages: 'Sections',
-      doctors: 'Doctors',
+      doctors: 'Our Specialist',
       gallery: 'Gallery',
       technology: 'Technology',
       testimonials: 'Testimonials',
@@ -503,7 +534,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       primaryCta: 'Book Appointment Now',
       secondaryCta: 'Explore Our Services',
       bottomSloganLabel: 'Your smile is our joy, let us keep it shining.',
-      floatingDoctorBadge: 'NOVA Clinical Team',
+      floatingDoctorBadge: 'Dental Specialist',
     },
     ctaStrip: {
       callTitle: 'Direct Clinic Line',
@@ -631,13 +662,13 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       cta: 'Make an Appointment',
     },
     teamSection: {
-      kicker: 'OUR TEAM',
-      headingPrefix: 'Meet the NOVA',
-      headingAccent: 'Dental Specialists',
+      kicker: 'ATTENDING SPECIALIST',
+      headingPrefix: 'Dental Specialist at',
+      headingAccent: 'NOVA Dental Clinic',
       subtitle:
-        'Experienced specialists collaborating across implantology, orthodontics, cosmetic veneers, and endodontics.',
-      viewAll: 'View All Doctors',
-      bookDoctor: 'Book With Doctor',
+        'Dedicated care in cosmetic dentistry, implants, and restorative treatments using modern digital diagnostics across Fifth Settlement and Nasr City.',
+      viewAll: 'View Specialist Profile',
+      bookDoctor: 'Book Appointment',
       viewProfile: 'View Profile',
     },
     testimonialsSection: {
@@ -691,8 +722,8 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       myBookingsBtn: 'My Bookings',
       branchLabel: 'Clinic Location',
       serviceLabel: 'Dental Service',
-      doctorLabel: 'Preferred Specialist',
-      anyDoctor: 'First Available Specialist',
+      doctorLabel: 'Dental Specialist',
+      anyDoctor: 'Available Clinic Schedule',
       dateLabel: 'Preferred Date',
       timeLabel: 'Available Time Slots',
       loadingSlots: 'Updating available slots...',
@@ -738,6 +769,22 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       title: 'Page Not Found',
       description: 'The page you are looking for is unavailable or has moved. Return to the homepage or book an appointment directly.',
       backHome: 'Back to Home',
+    },
+    whatsapp: {
+      fabLabel: 'Open WhatsApp chat for inquiries or appointments',
+      fabShort: 'WhatsApp Chat',
+      closeLabel: 'Close WhatsApp chat panel',
+      title: 'NOVA WhatsApp Desk',
+      subtitle: 'Immediate inquiries & scheduling',
+      welcomeText:
+        'Welcome to NOVA Dental Clinic. Choose a topic or add a quick note to message our reception directly on WhatsApp.',
+      intentInquiry: 'General Inquiry',
+      intentFifth: 'Book — Fifth Settlement',
+      intentNasr: 'Book — Nasr City',
+      noteLabel: 'Your message (optional)',
+      notePlaceholder: 'e.g. Veneers consultation or preferred visit day...',
+      startChat: 'Start WhatsApp Chat',
+      orBookOnline: 'Or book online',
     },
   },
 };

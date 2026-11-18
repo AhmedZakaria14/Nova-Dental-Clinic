@@ -379,13 +379,13 @@ export default function SocialMediaGallerySection() {
             <div className="text-xs leading-relaxed text-[#C8BFA8] sm:text-sm">
               <p className="font-semibold text-[#F7F3E9]">
                 {locale === 'en'
-                  ? `Public Archive Snapshot (${SOCIAL_MEDIA_ARCHIVE.capturedAt}) — ${SOCIAL_MEDIA_ARCHIVE.totalCaptured} public links`
-                  : `لقطة الأرشيف العام (${SOCIAL_MEDIA_ARCHIVE.capturedAt}) — ${SOCIAL_MEDIA_ARCHIVE.totalCaptured} رابطًا عامًا`}
+                  ? `Dental Media Archive (${SOCIAL_MEDIA_ARCHIVE.capturedAt}) — ${SOCIAL_MEDIA_ARCHIVE.items.length} dental posts`
+                  : `أرشيف الوسائط السنية (${SOCIAL_MEDIA_ARCHIVE.capturedAt}) — ${SOCIAL_MEDIA_ARCHIVE.items.length} منشورًا متعلقًا بالأسنان`}
               </p>
               <p className="mt-1">
                 {locale === 'en'
-                  ? 'Includes 36 publicly exposed Instagram posts before the login gate, 83 Facebook photos, and 10 Facebook reels. This archive does not claim to include every post on the Instagram profile.'
-                  : 'يحتوي هذا القسم على الروابط العامة التي أمكن جمعها قبل بوابة تسجيل الدخول (36 منشورًا من Instagram و83 صورة و10 فيديوهات من Facebook)، ولا يشمل بالضرورة جميع منشورات الحساب بالكامل.'}
+                  ? `Includes ${SOCIAL_MEDIA_ARCHIVE.counts.instagram} Instagram dental posts, ${SOCIAL_MEDIA_ARCHIVE.counts.facebookPhotos} Facebook dental photos, and ${SOCIAL_MEDIA_ARCHIVE.counts.facebookReels} Facebook reels (standalone logos and non-dental graphics excluded). This archive does not claim to include every post on the Instagram profile.`
+                  : `يعرض هذا القسم ${SOCIAL_MEDIA_ARCHIVE.counts.instagram} منشورًا من Instagram و${SOCIAL_MEDIA_ARCHIVE.counts.facebookPhotos} صورة و${SOCIAL_MEDIA_ARCHIVE.counts.facebookReels} فيديو من Facebook خاصة بطب الأسنان (بعد استبعاد الشعارات والصور غير السنية)، ولا يشمل بالضرورة جميع منشورات الحساب بالكامل.`}
               </p>
             </div>
           </div>

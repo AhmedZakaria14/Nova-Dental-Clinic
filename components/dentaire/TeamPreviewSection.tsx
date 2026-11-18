@@ -36,8 +36,8 @@ export default function TeamPreviewSection() {
           </FadeInUp>
         </div>
 
-        {/* 4 Doctor Cards with staggered FadeInUp */}
-        <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Sole Clinic Doctor Card centered cleanly */}
+        <div className="mx-auto mt-12 grid max-w-[380px] grid-cols-1 gap-8">
           {DOCTORS.map((doctor, idx) => (
             <FadeInUp key={doctor.id} delay={idx * 0.14}>
               <DoctorCard doctor={doctor} />

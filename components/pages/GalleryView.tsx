@@ -1,22 +1,16 @@
 'use client';
 
 import Image from 'next/image';
-import suiteImg from '@/src/assets/images/dental_treatment_suite_1794988565232.jpg';
 import smileImg from '@/src/assets/images/smile_transformation_showcase_1794988567315.jpg';
-import docMaleImg from '@/src/assets/images/doctor_male_specialist_1794988565766.jpg';
-import docFemaleImg from '@/src/assets/images/doctor_female_specialist_1794988566137.jpg';
 import { GALLERY_ITEMS } from '@/lib/clinic-data';
 import { useLanguage } from '@/components/LanguageProvider';
 import PageHeader from '@/components/PageHeader';
 import AppointmentButton from '@/components/AppointmentButton';
 import SocialMediaGallerySection from '@/components/SocialMediaGallerySection';
 
-const GALLERY_IMAGE_MAP = {
-  hero: suiteImg,
-  suite: suiteImg,
+const GALLERY_IMAGE_MAP: Record<(typeof GALLERY_ITEMS)[number]['imageKey'], typeof smileImg | string> = {
   smile: smileImg,
-  docMale: docMaleImg,
-  docFemale: docFemaleImg,
+  clinicDoctor: '/assets/aistudio/FB_IMG_1795021187745_7991af86.jpg',
 };
 
 export default function GalleryView() {
@@ -29,15 +23,15 @@ export default function GalleryView() {
         titleAccent="NOVA Dental Clinic"
         subtitle={
           locale === 'en'
-            ? 'Explore our calm treatment suites, clinic interior, and aesthetic care environment across Fifth Settlement and Nasr City.'
-            : 'جولة داخل غرف العلاج الرقمية وأجواء عيادة نوفا لطب الأسنان في فرعي التجمع الخامس ومدينة نصر.'
+            ? 'Explore our dental aesthetics, clinical care suites, and genuine dental cases across Fifth Settlement and Nasr City.'
+            : 'معرض الابتسامات والحالات السنية داخل عيادة نوفا لطب الأسنان في فرعي التجمع الخامس ومدينة نصر.'
         }
         breadcrumbs={[{ label: t.nav.home, href: '/' }, { label: t.nav.gallery }]}
       />
 
       <section className="bg-[#080808] py-14 sm:py-20">
         <div className="mx-auto max-w-[1300px] px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto grid max-w-[920px] grid-cols-1 gap-8 sm:grid-cols-2">
             {GALLERY_ITEMS.map((item) => {
               const title = locale === 'en' ? item.titleEn : item.titleAr;
               const category =
@@ -55,10 +49,11 @@ export default function GalleryView() {
                       src={GALLERY_IMAGE_MAP[item.imageKey]}
                       alt={title}
                       fill
+                      quality={95}
                       loading="lazy"
                       referrerPolicy="no-referrer"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 440px"
+                      className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
                   <div className="p-6">

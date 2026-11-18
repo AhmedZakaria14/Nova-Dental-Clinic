@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  EXCLUDED_NON_DENTAL_IDS,
   SOCIAL_MEDIA_ARCHIVE,
   computeFilterCounts,
   filterSocialMediaItems,
@@ -12,24 +13,35 @@ import {
   splitIntoMediaSections,
 } from './social-media-gallery';
 
-test('loads all 129 social media items cleanly with zero excluded entries', () => {
-  assert.equal(SOCIAL_MEDIA_ARCHIVE.totalCaptured, 129);
-  assert.equal(SOCIAL_MEDIA_ARCHIVE.items.length, 129);
-  assert.equal(SOCIAL_MEDIA_ARCHIVE.excludedItems.length, 0);
+test('excludes verified non-dental logos, placeholders, and greetings while retaining 119 dental items', () => {
+  assert.equal(SOCIAL_MEDIA_ARCHIVE.totalCaptured, 119);
+  assert.equal(SOCIAL_MEDIA_ARCHIVE.items.length, 119);
+  assert.equal(SOCIAL_MEDIA_ARCHIVE.excludedItems.length, 10);
+  assert.equal(
+    SOCIAL_MEDIA_ARCHIVE.items.length + SOCIAL_MEDIA_ARCHIVE.excludedItems.length,
+    129
+  );
+  for (const excludedId of EXCLUDED_NON_DENTAL_IDS) {
+    assert.equal(
+      SOCIAL_MEDIA_ARCHIVE.items.some((item) => item.id === excludedId),
+      false,
+      `Expected non-dental item ${excludedId} to be excluded`
+    );
+  }
 });
 
-test('computes exact platform and media type filter counts', () => {
+test('computes exact platform and media type filter counts for dental items', () => {
   const counts = computeFilterCounts(SOCIAL_MEDIA_ARCHIVE.items);
-  assert.equal(counts.all, 129);
+  assert.equal(counts.all, 119);
   assert.equal(counts.Instagram, 36);
-  assert.equal(counts.Facebook, 93);
-  assert.equal(counts.image, 91); // 8 IG image_or_carousel + 83 FB image
+  assert.equal(counts.Facebook, 83);
+  assert.equal(counts.image, 81); // 8 IG image_or_carousel + 73 FB dental images
   assert.equal(counts.video, 38); // 28 IG video + 10 FB video
 });
 
 test('splitIntoMediaSections routes images/carousels and videos accurately', () => {
   const { imageItems, videoItems } = splitIntoMediaSections(SOCIAL_MEDIA_ARCHIVE.items);
-  assert.equal(imageItems.length, 91);
+  assert.equal(imageItems.length, 81);
   assert.equal(videoItems.length, 38);
   assert.ok(imageItems.every(isImageMediaItem));
   assert.ok(videoItems.every(isVideoMediaItem));
@@ -43,7 +55,7 @@ test('filterSocialMediaItems narrows correctly by platform and media type', () =
   const fbSections = splitIntoMediaSections(
     filterSocialMediaItems(SOCIAL_MEDIA_ARCHIVE.items, 'Facebook')
   );
-  assert.equal(fbSections.imageItems.length, 83);
+  assert.equal(fbSections.imageItems.length, 73);
   assert.equal(fbSections.videoItems.length, 10);
 });
 
@@ -87,7 +99,7 @@ test('isValidPublicUrl accepts official Instagram/Facebook URLs and rejects inva
   assert.equal(isValidPublicUrl(''), false);
 });
 
-test('getOfficialEmbedUrl produces valid embed URLs for all 129 items', () => {
+test('getOfficialEmbedUrl produces valid embed URLs for all 119 dental items', () => {
   for (const item of SOCIAL_MEDIA_ARCHIVE.items) {
     const embedUrl = getOfficialEmbedUrl(item);
     assert.ok(embedUrl && embedUrl.startsWith('https://'), `Expected embed URL for ${item.id}`);

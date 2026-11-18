@@ -53,7 +53,7 @@ test('getAvailableSlots marks confirmed bookings unavailable and formats AR/EN t
       referenceCode: 'NV-100001',
       branchId: 'fifth-settlement',
       serviceId: 'veneers-dsd',
-      doctorId: 'dr-amira',
+      doctorId: 'nova-specialist',
       date: '2026-11-21',
       time: '14:00',
       patientName: 'سارة محمود',
@@ -66,7 +66,7 @@ test('getAvailableSlots marks confirmed bookings unavailable and formats AR/EN t
       referenceCode: 'NV-100002',
       branchId: 'fifth-settlement',
       serviceId: 'veneers-dsd',
-      doctorId: 'dr-amira',
+      doctorId: 'nova-specialist',
       date: '2026-11-21',
       time: '16:00',
       patientName: 'أحمد علي',
@@ -79,7 +79,7 @@ test('getAvailableSlots marks confirmed bookings unavailable and formats AR/EN t
   const slots = getAvailableSlots({
     branchId: 'fifth-settlement',
     date: '2026-11-21',
-    doctorId: 'dr-amira',
+    doctorId: 'nova-specialist',
     existingBookings: existing,
   });
 
@@ -95,7 +95,7 @@ test('validateBookingInput validates required fields in AR and EN', () => {
     {
       branchId: 'fifth-settlement',
       serviceId: 'veneers-dsd',
-      doctorId: 'dr-amira',
+      doctorId: 'nova-specialist',
       date: '2026-11-20',
       time: '14:00',
       patientName: 'م',
@@ -113,7 +113,7 @@ test('validateBookingInput validates required fields in AR and EN', () => {
     {
       branchId: 'fifth-settlement',
       serviceId: 'clear-aligners',
-      doctorId: 'dr-amira',
+      doctorId: 'nova-specialist',
       date: '2026-11-21',
       time: '15:00',
       patientName: 'ياسمين محمد',
@@ -128,7 +128,7 @@ test('validateBookingInput validates required fields in AR and EN', () => {
     {
       branchId: 'nasr-city',
       serviceId: 'clear-aligners',
-      doctorId: 'dr-amira',
+      doctorId: 'nova-specialist',
       date: '2026-11-21',
       time: '14:00',
       patientName: 'طارق حسن',
@@ -146,7 +146,7 @@ test('getAvailableSlots tracks Fifth Settlement and Nasr City branch availabilit
       referenceCode: 'NV-100009',
       branchId: 'fifth-settlement',
       serviceId: 'veneers-dsd',
-      doctorId: 'dr-amira',
+      doctorId: 'nova-specialist',
       date: '2026-11-21',
       time: '14:00',
       patientName: 'هدير سامي',
@@ -159,7 +159,7 @@ test('getAvailableSlots tracks Fifth Settlement and Nasr City branch availabilit
   const nasrSlots = getAvailableSlots({
     branchId: 'nasr-city',
     date: '2026-11-21',
-    doctorId: 'dr-amira',
+    doctorId: 'nova-specialist',
     existingBookings: existing,
   });
 

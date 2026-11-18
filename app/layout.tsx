@@ -8,6 +8,7 @@ import { LanguageProvider } from '@/components/LanguageProvider';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
+import FloatingWhatsAppButton from '@/components/FloatingWhatsAppButton';
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ['arabic', 'latin'],
@@ -132,6 +133,7 @@ export default async function RootLayout({
               <main className="flex-1">{children}</main>
               <SiteFooter />
             </div>
+            <FloatingWhatsAppButton />
           </SmoothScrollProvider>
         </LanguageProvider>
       </body>

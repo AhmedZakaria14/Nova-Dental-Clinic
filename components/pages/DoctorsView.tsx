@@ -20,7 +20,7 @@ export default function DoctorsView() {
 
       <section className="bg-[#080808] py-16 sm:py-20">
         <div className="mx-auto max-w-[1300px] px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto grid max-w-[400px] grid-cols-1 gap-8">
             {DOCTORS.map((doctor) => (
               <DoctorCard key={doctor.id} doctor={doctor} />
             ))}

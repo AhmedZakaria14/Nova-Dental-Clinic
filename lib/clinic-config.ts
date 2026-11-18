@@ -17,6 +17,7 @@ export const CLINIC_INFO = {
   primaryPhone: '01031235562',
   primaryPhoneInternational: '+20 10 31235562',
   primaryPhoneTel: 'tel:+201031235562',
+  whatsappNumber: '201031235562',
   additionalPhones: [
     { display: '01555277054', tel: 'tel:+201555277054' },
     { display: '01555077056', tel: 'tel:+201555077056' },

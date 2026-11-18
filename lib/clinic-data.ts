@@ -47,7 +47,7 @@ export interface DoctorProfile {
   credentialsEn: string;
   bioAr: string;
   bioEn: string;
-  portraitKey?: 'male' | 'female';
+  imageSrc: string;
   initials: string;
 }
 
@@ -101,7 +101,7 @@ export interface GalleryItem {
   categoryEn: string;
   descriptionAr: string;
   descriptionEn: string;
-  imageKey: 'hero' | 'suite' | 'smile' | 'docMale' | 'docFemale';
+  imageKey: 'smile' | 'clinicDoctor';
 }
 
 export const CLINIC_BRANCHES: ClinicBranch[] = [
@@ -336,74 +336,22 @@ export const DENTAL_SERVICES: DentalService[] = [
 
 export const DOCTORS: DoctorProfile[] = [
   {
-    id: 'dr-ahmed',
-    slug: 'dr-ahmed-elsayed',
-    nameAr: 'د. أحمد السيد',
-    nameEn: 'Dr. Ahmed El-Sayed',
-    titleAr: 'استشاري جراحة وزراعة الأسنان والتركيبات',
-    titleEn: 'Dental Implants & Prosthodontics Consultant',
-    specialtyAr: 'زراعة الأسنان والتركيبات',
-    specialtyEn: 'Implantology & Prosthodontics',
-    credentialsAr: 'استشاري زراعة الأسنان والتركيبات الثابتة — NOVA Dental Clinic',
-    credentialsEn: 'Implantology & Fixed Prosthodontics Consultant — NOVA Dental Clinic',
+    id: 'nova-specialist',
+    slug: 'dental-specialist',
+    nameAr: 'طبيب الأسنان المختص',
+    nameEn: 'NOVA Dental Specialist',
+    titleAr: 'طب وجراحة وتجميل الأسنان — عيادة نوفا لطب الأسنان',
+    titleEn: 'Restorative, Cosmetic & Implant Dentistry — NOVA Dental Clinic',
+    specialtyAr: 'طب وتجميل وزراعة الأسنان',
+    specialtyEn: 'Cosmetic, Implant & Restorative Dentistry',
+    credentialsAr: 'رعاية تخصصية شاملة في فروع التجمع الخامس ومدينة نصر — NOVA Dental Clinic',
+    credentialsEn: 'Comprehensive Dental Care across Fifth Settlement & Nasr City — NOVA Dental Clinic',
     bioAr:
-      'متخصص في التخطيط الرقمي لزراعة الأسنان وإعادة تأهيل الفم بالتركيبات الخزفية الثابتة بدقة عالية وراحة للمريض.',
+      'رعاية سنية دقيقة تجمع بين التشخيص الرقمي ثلاثي الأبعاد، تصميم الابتسامة الطبيعي، وزراعة الأسنان وعلاج الجذور في بيئة علاجية هادئة ومريحة.',
     bioEn:
-      'Specializes in digitally guided dental implants and full-mouth fixed ceramic rehabilitation focused on long-term comfort and stability.',
-    portraitKey: 'male',
-    initials: 'أ.س',
-  },
-  {
-    id: 'dr-amira',
-    slug: 'dr-amira-hegazy',
-    nameAr: 'د. أميرة حجازي',
-    nameEn: 'Dr. Amira Hegazy',
-    titleAr: 'استشاري تقويم وتجميل الأسنان وتصميم الابتسامة',
-    titleEn: 'Orthodontics & Aesthetic Dentistry Consultant',
-    specialtyAr: 'التقويم الشفاف وتجميل الابتسامة',
-    specialtyEn: 'Orthodontics & Cosmetic Dentistry',
-    credentialsAr: 'استشاري تقويم وتجميل الأسنان — NOVA Dental Clinic',
-    credentialsEn: 'Orthodontics & Aesthetic Dentistry Consultant — NOVA Dental Clinic',
-    bioAr:
-      'تركز على تصميم الابتسامة الطبيعي والعدسات الخزفية الدقيقة وخطط التقويم الشفاف المخصصة للبالغين والشباب.',
-    bioEn:
-      'Focuses on natural Smile Design, conservative porcelain veneers, and custom clear aligner orthodontics for adults and teens.',
-    portraitKey: 'female',
-    initials: 'أ.ح',
-  },
-  {
-    id: 'dr-karim',
-    slug: 'dr-karim-elmenshawy',
-    nameAr: 'د. كريم المنشاوي',
-    nameEn: 'Dr. Karim El-Menshawy',
-    titleAr: 'أخصائي علاج الجذور والحشوات التجميلية',
-    titleEn: 'Endodontics & Restorative Specialist',
-    specialtyAr: 'علاج الجذور والترميم',
-    specialtyEn: 'Endodontics & Restorative Care',
-    credentialsAr: 'أخصائي علاج الجذور والترميم التجميلي — NOVA Dental Clinic',
-    credentialsEn: 'Endodontics & Aesthetic Restorations — NOVA Dental Clinic',
-    bioAr:
-      'يعمل على إنقاذ الأسنان المتضررة وعلاج العصب بأعلى درجات العزل والدقة لتخفيف الألم والحفاظ على السن الطبيعي.',
-    bioEn:
-      'Dedicated to saving natural teeth with sterile root canal precision, gentle pain relief, and seamless composite restorations.',
-    initials: 'ك.م',
-  },
-  {
-    id: 'dr-salma',
-    slug: 'dr-salma-elsherbiny',
-    nameAr: 'د. سلمى الشربيني',
-    nameEn: 'Dr. Salma El-Sherbiny',
-    titleAr: 'أخصائية طب الأسنان الوقائي والتبييض',
-    titleEn: 'Preventive & Whitening Specialist',
-    specialtyAr: 'الوقاية وتبييض الأسنان',
-    specialtyEn: 'Preventive Care & Whitening',
-    credentialsAr: 'أخصائية العناية الوقائية وتبييض الأسنان — NOVA Dental Clinic',
-    credentialsEn: 'Preventive Care & Whitening — NOVA Dental Clinic',
-    bioAr:
-      'تهتم بجلسات الفحص الشامل وتنظيف الجير والتبييض الآمن مع بناء روتين وقائي يحافظ على صحة اللثة.',
-    bioEn:
-      'Provides comprehensive checkups, gentle periodontal hygiene, and sensitivity-safe whitening paired with personalized home care advice.',
-    initials: 'س.ش',
+      'Precision clinical care combining 3D digital diagnostics, natural smile design, dental implants, and gentle endodontic treatment in a calm clinic setting.',
+    imageSrc: '/assets/aistudio/FB_IMG_1795021187745_7991af86.jpg',
+    initials: 'NOVA',
   },
 ];
 
@@ -612,26 +560,6 @@ export const CLINIC_FAQS: FaqItem[] = [
 export const GALLERY_ITEMS: GalleryItem[] = [
   {
     id: 'gal-1',
-    titleAr: 'صالة الاستقبال في مركز أوزون الطبي',
-    titleEn: 'Clinic Reception Lounge',
-    categoryAr: 'أجواء العيادة',
-    categoryEn: 'Clinic Interior',
-    descriptionAr: 'تصميم هادئ ومريح يرحب بالمراجعين في التجمع الخامس.',
-    descriptionEn: 'Calm, welcoming reception lounge in Fifth Settlement, New Cairo.',
-    imageKey: 'hero',
-  },
-  {
-    id: 'gal-2',
-    titleAr: 'غرفة العلاج الرقمي',
-    titleEn: 'Digital Treatment Suite',
-    categoryAr: 'التجهيزات',
-    categoryEn: 'Equipment',
-    descriptionAr: 'وحدة أسنان حديثة مدمجة مع شاشة المسح الرقمي.',
-    descriptionEn: 'Modern ergonomic dental suite integrated with 3D digital scanning.',
-    imageKey: 'suite',
-  },
-  {
-    id: 'gal-3',
     titleAr: 'ابتسامة طبيعية متناغمة',
     titleEn: 'Natural Smile Aesthetics',
     categoryAr: 'تجميل الأسنان',
@@ -641,23 +569,13 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     imageKey: 'smile',
   },
   {
-    id: 'gal-4',
-    titleAr: 'استشارات الزراعة والتركيبات',
-    titleEn: 'Implantology Consultations',
-    categoryAr: 'الفريق الطبي',
-    categoryEn: 'Medical Team',
-    descriptionAr: 'متابعة دقيقة من استشاريي زراعة الأسنان والتركيبات.',
-    descriptionEn: 'Dedicated specialist evaluations for guided implant restorations.',
-    imageKey: 'docMale',
-  },
-  {
-    id: 'gal-5',
-    titleAr: 'استشارات التقويم وتصميم الابتسامة',
-    titleEn: 'Orthodontic & Smile Planning',
-    categoryAr: 'الفريق الطبي',
-    categoryEn: 'Medical Team',
-    descriptionAr: 'رعاية متخصصة في التقويم الشفاف وتجميل الأسنان.',
-    descriptionEn: 'Specialized orthodontic and aesthetic smile consultation.',
-    imageKey: 'docFemale',
+    id: 'gal-2',
+    titleAr: 'داخل غرفة العلاج في عيادة نوفا',
+    titleEn: 'Inside NOVA Dental Clinic Suite',
+    categoryAr: 'الرعاية السريرية',
+    categoryEn: 'Clinical Care',
+    descriptionAr: 'متابعة سريرية دقيقة بأحدث وحدات وأدوات طب الأسنان.',
+    descriptionEn: 'Dedicated chairside clinical evaluation with modern dental instruments.',
+    imageKey: 'clinicDoctor',
   },
 ];

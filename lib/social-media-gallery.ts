@@ -125,6 +125,25 @@ export function getOfficialEmbedUrl(
   return `https://www.facebook.com/plugins/post.php?href=${encoded}&show_text=false&width=360`;
 }
 
+export const EXCLUDED_NON_DENTAL_IDS: ReadonlySet<string> = new Set([
+  // Pure NOVA logo graphics & circle brand marks
+  'fb_photo_122116636784925987',
+  'fb_photo_122116636688925987',
+  'fb_photo_122116618886925987',
+  'fb_photo_122116618346925987',
+  'fb_photo_122116617914925987',
+  'fb_photo_122116617812925987',
+  'fb_photo_122116617734925987',
+  'fb_photo_122099157032925987',
+  // Eid greeting graphic & generic "N" letter avatar unrelated to dental work
+  'fb_photo_122165316056925987',
+  'fb_photo_122099153738925987',
+]);
+
+export function isDentalGalleryItem(entry: Pick<RawSocialMediaItem, 'id'>): boolean {
+  return !EXCLUDED_NON_DENTAL_IDS.has(entry.id);
+}
+
 export function parseSocialMediaArchive(data: {
   clinic: string;
   captured_at: string;
@@ -144,7 +163,12 @@ export function parseSocialMediaArchive(data: {
       entry.media_type === 'image_or_carousel' ||
       entry.media_type === 'video';
 
-    if (platformValid && mediaTypeValid && isValidPublicUrl(entry.public_url)) {
+    if (
+      platformValid &&
+      mediaTypeValid &&
+      isValidPublicUrl(entry.public_url) &&
+      isDentalGalleryItem(entry)
+    ) {
       validItems.push({
         id: entry.id,
         platform: entry.platform as SocialPlatform,
@@ -162,11 +186,15 @@ export function parseSocialMediaArchive(data: {
   return {
     clinic: data.clinic,
     capturedAt: data.captured_at,
-    totalCaptured: data.total_captured,
+    totalCaptured: validItems.length,
     counts: {
-      instagram: data.counts['Instagram'] ?? 0,
-      facebookPhotos: data.counts['Facebook photos'] ?? 0,
-      facebookReels: data.counts['Facebook reels'] ?? 0,
+      instagram: validItems.filter((item) => item.platform === 'Instagram').length,
+      facebookPhotos: validItems.filter(
+        (item) => item.platform === 'Facebook' && isImageMediaItem(item)
+      ).length,
+      facebookReels: validItems.filter(
+        (item) => item.platform === 'Facebook' && isVideoMediaItem(item)
+      ).length,
     },
     completenessNote: data.completeness_note,
     items: validItems,

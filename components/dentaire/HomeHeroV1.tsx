@@ -4,11 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Award, MapPin, ShieldCheck, Smile, Stethoscope } from 'lucide-react';
 import { motion } from 'motion/react';
-import femaleDocImg from '@/src/assets/images/doctor_female_specialist_1794988566137.jpg';
-import maleDocImg from '@/src/assets/images/doctor_male_specialist_1794988565766.jpg';
 import { CLINIC_INFO } from '@/lib/clinic-config';
 import { useLanguage } from '@/components/LanguageProvider';
 import AppointmentButton from '@/components/AppointmentButton';
+
+const SOLE_DOCTOR_PHOTO = '/assets/aistudio/FB_IMG_1795021187745_7991af86.jpg';
 
 export default function HomeHeroV1() {
   const { locale, t } = useLanguage();
@@ -95,14 +95,15 @@ export default function HomeHeroV1() {
               {/* Main Portrait Image */}
               <div className="relative aspect-[4/4.6] w-full overflow-hidden rounded-t-[48px] border border-[#D4AF37]/30 bg-[#161512] shadow-[0_24px_70px_rgba(0,0,0,0.7)]">
                 <Image
-                  src={femaleDocImg}
+                  src={SOLE_DOCTOR_PHOTO}
                   alt={
                     locale === 'en'
-                      ? 'Specialist dental consultant at NOVA Dental Clinic'
-                      : 'استشارية طب وتجميل الأسنان في نوفا لطب الأسنان'
+                      ? 'Dental specialist at NOVA Dental Clinic'
+                      : 'طبيب الأسنان في عيادة نوفا لطب الأسنان'
                   }
                   fill
                   priority
+                  quality={95}
                   referrerPolicy="no-referrer"
                   sizes="(max-width: 1024px) 100vw, 520px"
                   className="object-cover object-top"
@@ -131,23 +132,25 @@ export default function HomeHeroV1() {
                 <ShieldCheck className="h-9 w-9" />
               </div>
 
-              {/* Dentaire Floating Specialist Card (export-dantist-box) */}
+              {/* Dentaire Floating Clinic Specialist Badge (no personal name) */}
               <Link
                 href="/doctors"
                 className="absolute bottom-6 start-3 sm:-start-6 z-10 flex items-center gap-3 rounded-[16px] border border-[#D4AF37]/35 bg-[#141310]/95 backdrop-blur-md p-2.5 pe-5 shadow-[0_16px_44px_rgba(0,0,0,0.65)] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#E6C76A]"
               >
                 <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-[12px] border border-[#D4AF37]/25 bg-[#080808]">
                   <Image
-                    src={maleDocImg}
-                    alt={t.hero.floatingDoctorBadge}
+                    src="/assets/nova-logo-hd.png"
+                    alt="NOVA Dental Clinic"
                     fill
+                    quality={100}
+                    referrerPolicy="no-referrer"
                     sizes="56px"
-                    className="object-cover object-top"
+                    className="object-contain p-1.5"
                   />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-[#F7F3E9]">
-                    {locale === 'en' ? 'Dr. Ahmed El-Sayed' : 'د. أحمد السيد'}
+                    {locale === 'en' ? 'NOVA Dental Clinic' : 'نوفا لطب الأسنان'}
                   </p>
                   <p className="text-xs font-medium text-[#E6C76A]">
                     {t.hero.floatingDoctorBadge}
