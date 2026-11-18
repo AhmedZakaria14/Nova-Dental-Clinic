@@ -7,7 +7,6 @@ import {
   Eye,
   Facebook,
   Film,
-  Info,
   Instagram,
   Layers,
   Play,
@@ -176,8 +175,8 @@ function EmbeddedMediaCard({
                 <p className="text-xs leading-relaxed text-[#C8BFA8]">
                   {embedUrl
                     ? locale === 'en'
-                      ? 'Scroll into view to load embedded post'
-                      : 'يتحمل المنشور تلقائيًا عند التمرير'
+                      ? `Loading post from ${item.platform}...`
+                      : `جارٍ تحميل المنشور من ${item.platform}...`
                     : locale === 'en'
                       ? `Direct embed unavailable — open original post on ${item.platform}`
                       : `يتعذر تضمين هذا المنشور مباشرة — يمكنك فتحه على ${item.platform}`}
@@ -342,13 +341,13 @@ export default function SocialMediaGallerySection() {
       className="border-t border-[#D4AF37]/15 bg-[#0C0B09] py-14 sm:py-20"
     >
       <div className="mx-auto max-w-[1300px] px-4 sm:px-6 lg:px-8 space-y-10">
-        {/* Section Heading + Honest Completeness Disclaimer */}
+        {/* Section Heading */}
         <div className="space-y-6">
           <div className="max-w-3xl">
             <span className="inline-flex items-center gap-2 text-xs font-bold tracking-wider uppercase text-[#D4AF37]">
               {locale === 'en'
-                ? 'PUBLIC SOCIAL MEDIA ARCHIVE'
-                : 'أرشيف المنصات الاجتماعية'}
+                ? 'PUBLIC SOCIAL MEDIA GALLERY'
+                : 'منصات العيادة الاجتماعية'}
             </span>
             <h2 className="mt-2 text-2xl font-bold text-[#F7F3E9] sm:text-4xl">
               {locale === 'en' ? (
@@ -365,29 +364,9 @@ export default function SocialMediaGallerySection() {
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-[#C8BFA8] sm:text-base">
               {locale === 'en'
-                ? 'View embedded clinic photos, carousels, and reels directly inside the gallery with lazy loading, or open any original post directly on Instagram or Facebook.'
-                : 'شاهد صور العيادة والمنشورات والريلز مضمنة مباشرة داخل الصفحة مع التحميل الكسول، أو افتح المنشور الأصلي في تبويب جديد عند الحاجة.'}
+                ? 'View clinic photos, carousels, and reels directly inside the gallery, or open any original post on Instagram or Facebook.'
+                : 'شاهد صور العيادة والمنشورات والريلز مضمنة مباشرة داخل الصفحة، أو افتح المنشور الأصلي في تبويب جديد عند الحاجة.'}
             </p>
-          </div>
-
-          {/* Completeness & Date Note */}
-          <div className="flex items-start gap-3 rounded-2xl border border-[#D4AF37]/25 bg-[#141310] p-4 sm:p-5">
-            <Info
-              className="mt-0.5 h-5 w-5 shrink-0 text-[#D4AF37]"
-              aria-hidden="true"
-            />
-            <div className="text-xs leading-relaxed text-[#C8BFA8] sm:text-sm">
-              <p className="font-semibold text-[#F7F3E9]">
-                {locale === 'en'
-                  ? `Dental Media Archive (${SOCIAL_MEDIA_ARCHIVE.capturedAt}) — ${SOCIAL_MEDIA_ARCHIVE.items.length} dental posts`
-                  : `أرشيف الوسائط السنية (${SOCIAL_MEDIA_ARCHIVE.capturedAt}) — ${SOCIAL_MEDIA_ARCHIVE.items.length} منشورًا متعلقًا بالأسنان`}
-              </p>
-              <p className="mt-1">
-                {locale === 'en'
-                  ? `Includes ${SOCIAL_MEDIA_ARCHIVE.counts.instagram} Instagram dental posts, ${SOCIAL_MEDIA_ARCHIVE.counts.facebookPhotos} Facebook dental photos, and ${SOCIAL_MEDIA_ARCHIVE.counts.facebookReels} Facebook reels (standalone logos and non-dental graphics excluded). This archive does not claim to include every post on the Instagram profile.`
-                  : `يعرض هذا القسم ${SOCIAL_MEDIA_ARCHIVE.counts.instagram} منشورًا من Instagram و${SOCIAL_MEDIA_ARCHIVE.counts.facebookPhotos} صورة و${SOCIAL_MEDIA_ARCHIVE.counts.facebookReels} فيديو من Facebook خاصة بطب الأسنان (بعد استبعاد الشعارات والصور غير السنية)، ولا يشمل بالضرورة جميع منشورات الحساب بالكامل.`}
-              </p>
-            </div>
           </div>
 
           {/* Filter Pills */}
