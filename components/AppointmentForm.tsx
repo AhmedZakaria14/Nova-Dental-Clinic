@@ -39,6 +39,17 @@ export default function AppointmentForm() {
 
   const queryServiceId = searchParams.get('service');
   const queryDoctorId = searchParams.get('doctor');
+  const queryBranchId = searchParams.get('branch');
+
+  const initialBranch: BranchId = useMemo(() => {
+    if (
+      queryBranchId &&
+      CLINIC_BRANCHES.some((b) => b.id === queryBranchId)
+    ) {
+      return queryBranchId as BranchId;
+    }
+    return CLINIC_BRANCHES[0].id;
+  }, [queryBranchId]);
 
   const initialService = useMemo(() => {
     if (queryServiceId && DENTAL_SERVICES.some((s) => s.id === queryServiceId)) {
@@ -57,7 +68,7 @@ export default function AppointmentForm() {
     return 'any';
   }, [queryDoctorId]);
 
-  const branchId: BranchId = 'fifth-settlement';
+  const [branchId, setBranchId] = useState<BranchId>(initialBranch);
   const [serviceId, setServiceId] = useState(initialService);
   const [doctorId, setDoctorId] = useState(initialDoctor);
   const [date, setDate] = useState(() => workingDays[0]?.date ?? '');
@@ -148,7 +159,8 @@ export default function AppointmentForm() {
     DENTAL_SERVICES.find((s) => s.id === serviceId) ?? DENTAL_SERVICES[0];
   const selectedDoctorObj = DOCTORS.find((d) => d.id === doctorId);
   const selectedDayObj = workingDays.find((d) => d.date === date);
-  const branch = CLINIC_BRANCHES[0];
+  const branch =
+    CLINIC_BRANCHES.find((b) => b.id === branchId) ?? CLINIC_BRANCHES[0];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -291,6 +303,14 @@ export default function AppointmentForm() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="font-medium text-[#C8BFA8]">
+                  {t.appointmentPage.branchLabel}
+                </span>
+                <span className="font-bold text-[#F7F3E9]">
+                  {locale === 'en' ? branch.nameEn : branch.nameAr}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-[#C8BFA8]">
                   {t.appointmentPage.serviceLabel}
                 </span>
                 <span className="font-bold text-[#F7F3E9]">
@@ -335,21 +355,48 @@ export default function AppointmentForm() {
               noValidate
               className="space-y-6 rounded-[30px] border border-[#D4AF37]/25 bg-[#161512] p-6 sm:p-9 lg:col-span-8 shadow-xl"
             >
-              {/* Clinic Location Badge */}
+              {/* Clinic Branch Selector (Fifth Settlement & Nasr City) */}
               <div>
                 <label className="mb-2 block text-sm font-bold text-[#F7F3E9]">
                   {t.appointmentPage.branchLabel}
                 </label>
-                <div className="flex items-center gap-3 rounded-[16px] border border-[#D4AF37]/35 bg-[#0A0908] px-4 py-3.5">
-                  <MapPin className="h-5 w-5 shrink-0 text-[#D4AF37]" aria-hidden="true" />
-                  <div>
-                    <p className="text-sm font-bold text-[#F7F3E9]">
-                      {locale === 'en' ? branch.nameEn : branch.nameAr}
-                    </p>
-                    <p className="text-xs text-[#C8BFA8]">
-                      {locale === 'en' ? branch.addressEn : branch.addressAr}
-                    </p>
-                  </div>
+                <div
+                  role="radiogroup"
+                  aria-label={t.appointmentPage.branchLabel}
+                  className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                >
+                  {CLINIC_BRANCHES.map((item) => {
+                    const isSelected = item.id === branchId;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={isSelected}
+                        onClick={() => setBranchId(item.id)}
+                        className={`flex items-start gap-3 rounded-[16px] border px-4 py-3.5 text-start transition-colors cursor-pointer ${
+                          isSelected
+                            ? 'border-[#E6C76A] bg-[#1E1A11] shadow-[0_6px_20px_rgba(212,175,55,0.12)]'
+                            : 'border-[#D4AF37]/25 bg-[#0A0908] hover:border-[#D4AF37]/60'
+                        }`}
+                      >
+                        <MapPin
+                          className={`mt-0.5 h-5 w-5 shrink-0 ${
+                            isSelected ? 'text-[#E6C76A]' : 'text-[#D4AF37]/70'
+                          }`}
+                          aria-hidden="true"
+                        />
+                        <div>
+                          <p className="text-sm font-bold text-[#F7F3E9]">
+                            {locale === 'en' ? item.nameEn : item.nameAr}
+                          </p>
+                          <p className="mt-0.5 text-xs text-[#C8BFA8]">
+                            {locale === 'en' ? item.addressEn : item.addressAr}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -686,6 +733,9 @@ export default function AppointmentForm() {
                 </div>
               ) : (
                 myBookings.map((booking) => {
+                  const br = CLINIC_BRANCHES.find(
+                    (b) => b.id === booking.branchId
+                  );
                   const srv = DENTAL_SERVICES.find(
                     (s) => s.id === booking.serviceId
                   );
@@ -724,6 +774,13 @@ export default function AppointmentForm() {
                             : srv.titleAr
                           : booking.serviceId}
                       </p>
+
+                      {br && (
+                        <p className="mt-1 flex items-center gap-1.5 text-xs text-[#C8BFA8]">
+                          <MapPin className="h-3.5 w-3.5 shrink-0 text-[#D4AF37]" />
+                          <span>{locale === 'en' ? br.nameEn : br.nameAr}</span>
+                        </p>
+                      )}
 
                       <p className="mt-1 flex items-center gap-1.5 text-xs text-[#C8BFA8]">
                         <UserRound className="h-3.5 w-3.5 text-[#D4AF37]" />

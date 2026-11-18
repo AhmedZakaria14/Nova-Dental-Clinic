@@ -1,4 +1,4 @@
-export type BranchId = 'fifth-settlement';
+export type BranchId = 'fifth-settlement' | 'nasr-city';
 
 export type ServiceCategory = 'all' | 'cosmetic' | 'implants' | 'ortho' | 'endo';
 
@@ -112,6 +112,16 @@ export const CLINIC_BRANCHES: ClinicBranch[] = [
     addressAr: 'مركز أوزون الطبي، التجمع الخامس، القاهرة الجديدة، مصر.',
     addressEn: 'Ozone Medical Center, Fifth Settlement, New Cairo, Egypt.',
     phone: '01031235562',
+    openHour: 12,
+    closeHour: 21,
+  },
+  {
+    id: 'nasr-city',
+    nameAr: 'نوفا لطب الأسنان — مدينة نصر',
+    nameEn: 'NOVA Dental Clinic — Nasr City',
+    addressAr: 'فرع مدينة نصر، القاهرة، مصر.',
+    addressEn: 'Nasr City Branch, Cairo, Egypt.',
+    phone: '01555277054',
     openHour: 12,
     closeHour: 21,
   },
@@ -448,12 +458,12 @@ export const BLOG_ARTICLES: BlogArticle[] = [
     paragraphsAr: [
       'تُصمَّم عدسات الفينيرز الخزفية لتمنح ابتسامة متجانسة ومقاومة للتصبغات، إلا أن العناية اليومية المنتظمة تظل الأساس للحفاظ على صحة اللثة المحيطة بها.',
       'ينصح أطباء NOVA Dental Clinic باستخدام فرشاة ناعمة ومعجون قليل الكشط مرتين يومياً، إلى جانب استخدام خيط الأسنان الطبي بلطف لتنظيف المسافات البينية.',
-      'كما يفضَّل تجنب قضم الأجسام الصلبة مباشرة على القواطع الأمامية، والالتزام بزيارة الفحص والتلميع الدورية كل ستة أشهر في مركز أوزون الطبي.',
+      'كما يفضَّل تجنب قضم الأجسام الصلبة مباشرة على القواطع الأمامية، والالتزام بزيارة الفحص والتلميع الدورية كل ستة أشهر في فرعي التجمع الخامس ومدينة نصر.',
     ],
     paragraphsEn: [
       'Porcelain veneers are crafted for stain resistance and natural translucency, while consistent daily oral hygiene keeps the surrounding gum tissue healthy.',
       'Our clinicians at NOVA Dental Clinic recommend brushing twice daily with a soft-bristled brush and low-abrasion toothpaste, paired with gentle daily flossing.',
-      'Avoid biting hard objects with front teeth and schedule routine six-month hygiene polishing visits to preserve marginal integrity and natural luster.',
+      'Avoid biting hard objects with front teeth and schedule routine six-month hygiene polishing visits at our Fifth Settlement or Nasr City clinic.',
     ],
     imageKey: 'smile',
     readMinutes: 3,
@@ -554,12 +564,12 @@ export const TECH_STANDARDS: TechStandard[] = [
 export const CLINIC_FAQS: FaqItem[] = [
   {
     id: 'faq-1',
-    questionAr: 'أين تقع عيادة نوفا لطب الأسنان (NOVA Dental Clinic)؟',
-    questionEn: 'Where is NOVA Dental Clinic located?',
+    questionAr: 'أين تقع فروع عيادة نوفا لطب الأسنان (NOVA Dental Clinic)؟',
+    questionEn: 'Where are NOVA Dental Clinic branches located?',
     answerAr:
-      'تقع العيادة في مركز أوزون الطبي، التجمع الخامس، القاهرة الجديدة، مصر. يمكنك فتح الاتجاهات مباشرة عبر رابط خرائط جوجل الموجود في صفحة التواصل والتذييل.',
+      'تتوفر عيادة نوفا في فرعين: فرع التجمع الخامس في مركز أوزون الطبي، القاهرة الجديدة، وفرع مدينة نصر بالقاهرة. يمكنك فتح اتجاهات الخريطة أو اختيار الفرع المناسب عند حجز موعدك.',
     answerEn:
-      'We are located at Ozone Medical Center, Fifth Settlement, New Cairo, Egypt. Direct directions are available via the Google Maps link on our website.',
+      'NOVA Dental Clinic serves you across two Cairo locations: our Fifth Settlement branch at Ozone Medical Center (New Cairo) and our Nasr City branch. You can select your preferred branch when booking online.',
   },
   {
     id: 'faq-2',

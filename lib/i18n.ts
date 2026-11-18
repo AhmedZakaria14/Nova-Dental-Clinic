@@ -201,9 +201,9 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
   ar: {
     meta: {
       siteName: 'نوفا لطب الأسنان | NOVA Dental Clinic',
-      homeTitle: 'نوفا لطب الأسنان | NOVA Dental Clinic — التجمع الخامس',
+      homeTitle: 'نوفا لطب الأسنان | NOVA Dental Clinic — التجمع الخامس ومدينة نصر',
       homeDescription:
-        'في NOVA Dental Clinic بمركز أوزون الطبي بالتجمع الخامس نهتم بصحة وجمال ابتسامتك من خلال تجربة علاجية مريحة ورعاية متخصصة.',
+        'في NOVA Dental Clinic بفروع التجمع الخامس (مركز أوزون الطبي) ومدينة نصر نهتم بصحة وجمال ابتسامتك من خلال تجربة علاجية مريحة ورعاية متخصصة.',
     },
     nav: {
       home: 'الرئيسية',
@@ -224,11 +224,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       closeMenu: 'إغلاق القائمة',
     },
     hero: {
-      kicker: 'NOVA DENTAL CLINIC · التجمع الخامس',
+      kicker: 'NOVA DENTAL CLINIC · التجمع الخامس ومدينة نصر',
       headlinePrefix: 'ابتسامتك تستحق',
       headlineAccent: 'أفضل رعاية',
       description:
-        'في NOVA Dental Clinic، نهتم بصحة وجمال ابتسامتك من خلال تجربة علاجية مريحة ورعاية متخصصة في مركز أوزون الطبي بالتجمع الخامس.',
+        'في NOVA Dental Clinic، نهتم بصحة وجمال ابتسامتك من خلال تجربة علاجية مريحة ورعاية متخصصة في فرعينا بالتجمع الخامس (مركز أوزون الطبي) ومدينة نصر.',
       primaryCta: 'احجز موعدك الآن',
       secondaryCta: 'اكتشف خدماتنا',
       bottomSloganLabel: 'ابتسامتك مصدر سعادتنا، خلّينا نحافظ على إشراقها.',
@@ -237,7 +237,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     ctaStrip: {
       callTitle: 'تواصل معنا مباشرة',
       callSubtitle: 'اتصل لحجز أو تعديل موعدك',
-      locationTitle: 'موقع العيادة',
+      locationTitle: 'فروع العيادة',
       locationBtn: 'الاتجاهات على الخريطة',
       bookTitle: 'احجز استشارتك',
       bookSubtitle: 'تأكيد فوري عبر نظام المواعيد',
@@ -263,7 +263,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       headingPrefix: 'خدمات عالية الجودة',
       headingAccent: 'لصحة وجمال أسنانك',
       subtitle:
-        'نقدم باقة متكاملة من العلاجات التجميلية والوقائية والترميمية بإشراف أطباء متخصصين في مركز أوزون الطبي.',
+        'نقدم باقة متكاملة من العلاجات التجميلية والوقائية والترميمية بإشراف أطباء متخصصين في فرعي التجمع الخامس ومدينة نصر.',
       readMore: 'تفاصيل الخدمة',
       viewAll: 'جميع الخدمات',
       footerNotePrefix: 'نعتمد أحدث بروتوكولات التعقيم والفحص الرقمي.',
@@ -272,15 +272,15 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     visitClinic: {
       kicker: 'زيارة العيادة',
-      heading: 'بيئة علاجية هادئة ومجهزة لراحتك في قلب التجمع الخامس',
+      heading: 'بيئة علاجية هادئة ومجهزة لراحتك في التجمع الخامس ومدينة نصر',
       cta: 'احجز زيارتك الآن',
     },
     counters: {
       items: [
         {
-          value: 'OZONE',
-          title: 'مركز أوزون الطبي',
-          description: 'موقع يسهل الوصول إليه في قلب التجمع الخامس بالقاهرة الجديدة.',
+          value: 'فرعان',
+          title: 'التجمع الخامس ومدينة نصر',
+          description: 'فرع مركز أوزون الطبي بالتجمع الخامس وفرع مدينة نصر بالقاهرة لخدمتكم بسهولة.',
         },
         {
           value: '3D',
@@ -392,11 +392,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     contactSection: {
       kicker: 'تواصل معنا',
-      headingPrefix: 'زُرنا في مركز أوزون الطبي',
-      headingAccent: 'بالتجمع الخامس',
+      headingPrefix: 'زُرنا في التجمع الخامس',
+      headingAccent: 'أو مدينة نصر',
       subtitle:
-        'يسعدنا استقبال استفساراتكم وحجز مواعيدكم عبر الهاتف أو من خلال نظام الحجز الإلكتروني المباشر.',
-      addressLabel: 'العنوان',
+        'يسعدنا استقبالكم في فرعي التجمع الخامس (مركز أوزون الطبي) ومدينة نصر، وتلقي استفساراتكم وحجوزاتكم عبر الهاتف أو نظام الحجز الإلكتروني.',
+      addressLabel: 'عناوين الفروع',
       primaryPhoneLabel: 'الرقم الرئيسي',
       additionalPhonesLabel: 'أرقام إضافية للتواصل',
       emailLabel: 'البريد الإلكتروني',
@@ -416,7 +416,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       headingPrefix: 'احجز موعدك في',
       headingAccent: 'نوفا لطب الأسنان',
       subtitle:
-        'اختر الخدمة والطبيب والموعد المناسب لتسجيل زيارتك في مركز أوزون الطبي بالتجمع الخامس.',
+        'اختر الفرع المناسب (التجمع الخامس أو مدينة نصر) والخدمة والطبيب والموعد لتسجيل زيارتك.',
       myBookingsBtn: 'حجوزاتي المسجلة',
       branchLabel: 'مقر العيادة',
       serviceLabel: 'الخدمة الطبية المطلوبة',
@@ -472,9 +472,9 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
   en: {
     meta: {
       siteName: 'NOVA Dental Clinic',
-      homeTitle: 'NOVA Dental Clinic — Fifth Settlement, New Cairo',
+      homeTitle: 'NOVA Dental Clinic — Fifth Settlement & Nasr City, Cairo',
       homeDescription:
-        'At NOVA Dental Clinic in Ozone Medical Center, Fifth Settlement, New Cairo, your smile is our joy — experience specialized, comfortable dental care.',
+        'At NOVA Dental Clinic across Fifth Settlement (Ozone Medical Center) and Nasr City, Cairo, your smile is our joy — experience specialized, comfortable dental care.',
     },
     nav: {
       home: 'Home',
@@ -495,11 +495,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       closeMenu: 'Close navigation menu',
     },
     hero: {
-      kicker: 'NOVA DENTAL CLINIC · FIFTH SETTLEMENT',
+      kicker: 'NOVA DENTAL CLINIC · FIFTH SETTLEMENT & NASR CITY',
       headlinePrefix: 'Your Smile Deserves',
       headlineAccent: 'the Finest Care',
       description:
-        'At NOVA Dental Clinic, we care for the health and beauty of your smile through a comfortable treatment experience and specialized care at Ozone Medical Center, New Cairo.',
+        'At NOVA Dental Clinic, we care for the health and beauty of your smile through a comfortable treatment experience and specialized care across our Fifth Settlement (Ozone Medical Center) and Nasr City branches.',
       primaryCta: 'Book Appointment Now',
       secondaryCta: 'Explore Our Services',
       bottomSloganLabel: 'Your smile is our joy, let us keep it shining.',
@@ -508,7 +508,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     ctaStrip: {
       callTitle: 'Direct Clinic Line',
       callSubtitle: 'Call to book or confirm your visit',
-      locationTitle: 'Clinic Location',
+      locationTitle: 'Clinic Branches',
       locationBtn: 'Directions on Google Maps',
       bookTitle: 'Schedule Your Visit',
       bookSubtitle: 'Instant online appointment booking',
@@ -527,14 +527,14 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
         'Clear Treatment Planning',
       ],
       cta: 'About NOVA Clinic',
-      rotatingBadgeText: 'NOVA DENTAL CLINIC · NEW CAIRO · ',
+      rotatingBadgeText: 'NOVA DENTAL CLINIC · CAIRO · ',
     },
     servicesSection: {
       kicker: 'OUR SERVICES',
       headingPrefix: 'High Quality Dental',
       headingAccent: 'Services for You',
       subtitle:
-        'Comprehensive cosmetic, restorative, orthodontic, and preventive treatments delivered by specialized clinicians at Ozone Medical Center.',
+        'Comprehensive cosmetic, restorative, orthodontic, and preventive treatments delivered by specialized clinicians across our Fifth Settlement and Nasr City branches.',
       readMore: 'Read More',
       viewAll: 'All Services',
       footerNotePrefix: 'Every treatment follows strict digital planning and European sterilization.',
@@ -543,15 +543,15 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     visitClinic: {
       kicker: 'VISIT CLINIC',
-      heading: 'A Calm, Digitally Equipped Dental Studio in Fifth Settlement',
+      heading: 'Calm, Digitally Equipped Dental Studios in Fifth Settlement & Nasr City',
       cta: 'Book Your Visit',
     },
     counters: {
       items: [
         {
-          value: 'OZONE',
-          title: 'Ozone Medical Center',
-          description: 'Accessible location in Fifth Settlement, New Cairo, Egypt.',
+          value: '2 Branches',
+          title: 'Fifth Settlement & Nasr City',
+          description: 'Serving New Cairo (Ozone Medical Center) and Nasr City, Cairo.',
         },
         {
           value: '3D',
@@ -575,7 +575,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       headingPrefix: 'The Difference at',
       headingAccent: 'NOVA Dental Clinic',
       subtitle:
-        'Every detail of our Fifth Settlement clinic balances clinical precision with calm hospitality.',
+        'Every detail across our Fifth Settlement and Nasr City clinics balances clinical precision with calm hospitality.',
       leftItems: [
         {
           title: 'Comprehensive Specialties',
@@ -663,11 +663,11 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
     },
     contactSection: {
       kicker: 'CONTACT US',
-      headingPrefix: 'Visit Us at Ozone Medical Center',
-      headingAccent: 'New Cairo',
+      headingPrefix: 'Visit Us in Fifth Settlement',
+      headingAccent: '& Nasr City',
       subtitle:
-        'Reach our Fifth Settlement reception by phone, email, or schedule your appointment online.',
-      addressLabel: 'Clinic Address',
+        'Visit our Fifth Settlement (Ozone Medical Center) or Nasr City branches, reach us by phone or email, or book your appointment online.',
+      addressLabel: 'Clinic Branches',
       primaryPhoneLabel: 'Primary Phone',
       additionalPhonesLabel: 'Additional Contact Numbers',
       emailLabel: 'Email Address',
@@ -687,7 +687,7 @@ export const DICTIONARIES: Record<Locale, Dictionary> = {
       headingPrefix: 'Schedule Your Visit at',
       headingAccent: 'NOVA Dental Clinic',
       subtitle:
-        'Choose your desired dental service, specialist, date, and available time slot at Ozone Medical Center.',
+        'Choose your preferred branch (Fifth Settlement or Nasr City), service, specialist, date, and available time slot.',
       myBookingsBtn: 'My Bookings',
       branchLabel: 'Clinic Location',
       serviceLabel: 'Dental Service',

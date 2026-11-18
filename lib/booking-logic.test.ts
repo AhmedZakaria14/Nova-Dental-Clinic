@@ -123,6 +123,47 @@ test('validateBookingInput validates required fields in AR and EN', () => {
   );
   assert.equal(okResult.valid, true);
   assert.equal(okResult.normalizedPhone, '01031235562');
+
+  const nasrCityOk = validateBookingInput(
+    {
+      branchId: 'nasr-city',
+      serviceId: 'clear-aligners',
+      doctorId: 'dr-amira',
+      date: '2026-11-21',
+      time: '14:00',
+      patientName: 'طارق حسن',
+      patientPhone: '01555277054',
+    },
+    'ar'
+  );
+  assert.equal(nasrCityOk.valid, true);
+});
+
+test('getAvailableSlots tracks Fifth Settlement and Nasr City branch availability independently', () => {
+  const existing: BookingRecord[] = [
+    {
+      id: 'b-fs',
+      referenceCode: 'NV-100009',
+      branchId: 'fifth-settlement',
+      serviceId: 'veneers-dsd',
+      doctorId: 'dr-amira',
+      date: '2026-11-21',
+      time: '14:00',
+      patientName: 'هدير سامي',
+      patientPhone: '01031235562',
+      status: 'confirmed',
+      createdAt: '2026-11-18T10:00:00.000Z',
+    },
+  ];
+
+  const nasrSlots = getAvailableSlots({
+    branchId: 'nasr-city',
+    date: '2026-11-21',
+    doctorId: 'dr-amira',
+    existingBookings: existing,
+  });
+
+  assert.equal(nasrSlots.find((s) => s.time === '14:00')?.available, true);
 });
 
 test('formatBookingReference returns NV-prefixed code', () => {

@@ -14,6 +14,10 @@ export default function SiteFooter() {
     locale === 'en' ? CLINIC_INFO.brandNameEn : CLINIC_INFO.brandNameAr;
   const slogan = locale === 'en' ? CLINIC_INFO.sloganEn : CLINIC_INFO.sloganAr;
   const address = locale === 'en' ? CLINIC_INFO.addressEn : CLINIC_INFO.addressAr;
+  const nasrCityAddress =
+    locale === 'en'
+      ? CLINIC_INFO.nasrCityAddressEn
+      : CLINIC_INFO.nasrCityAddressAr;
 
   return (
     <footer className="border-t border-[#D4AF37]/25 bg-[#050505] text-[#F7F3E9] pt-16 sm:pt-20">
@@ -38,15 +42,24 @@ export default function SiteFooter() {
               {slogan}
             </p>
 
-            <a
-              href={CLINIC_INFO.googleMapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-flex items-start gap-2 text-sm text-[#C8BFA8] transition-colors hover:text-[#E6C76A]"
-            >
-              <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#D4AF37]" aria-hidden="true" />
-              <span>{address}</span>
-            </a>
+            <div className="mt-5 space-y-2.5">
+              <a
+                href={CLINIC_INFO.googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-2 text-sm text-[#C8BFA8] transition-colors hover:text-[#E6C76A]"
+              >
+                <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#D4AF37]" aria-hidden="true" />
+                <span>{address}</span>
+              </a>
+              <Link
+                href="/appointment?branch=nasr-city"
+                className="flex items-start gap-2 text-sm text-[#C8BFA8] transition-colors hover:text-[#E6C76A]"
+              >
+                <MapPin className="mt-1 h-4 w-4 shrink-0 text-[#D4AF37]" aria-hidden="true" />
+                <span>{nasrCityAddress}</span>
+              </Link>
+            </div>
           </div>
 
           {/* Column 2: Quick Links */}

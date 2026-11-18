@@ -75,6 +75,7 @@ export default async function RootLayout({
     telephone: CLINIC_INFO.primaryPhoneInternational,
     email: CLINIC_INFO.email,
     sameAs: [CLINIC_INFO.instagramUrl],
+    areaServed: ['Fifth Settlement, New Cairo', 'Nasr City, Cairo'],
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Ozone Medical Center, Fifth Settlement',
@@ -82,6 +83,30 @@ export default async function RootLayout({
       addressRegion: 'Cairo',
       addressCountry: 'EG',
     },
+    department: [
+      {
+        '@type': 'Dentist',
+        name: 'NOVA Dental Clinic — Fifth Settlement',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: 'Ozone Medical Center, Fifth Settlement',
+          addressLocality: 'New Cairo',
+          addressRegion: 'Cairo',
+          addressCountry: 'EG',
+        },
+        hasMap: CLINIC_INFO.googleMapsUrl,
+      },
+      {
+        '@type': 'Dentist',
+        name: 'NOVA Dental Clinic — Nasr City',
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Nasr City',
+          addressRegion: 'Cairo',
+          addressCountry: 'EG',
+        },
+      },
+    ],
     hasMap: CLINIC_INFO.googleMapsUrl,
   };
 

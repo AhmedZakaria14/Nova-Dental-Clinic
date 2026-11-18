@@ -12,7 +12,12 @@ import AppointmentButton from '@/components/AppointmentButton';
 
 export default function HomeHeroV1() {
   const { locale, t } = useLanguage();
-  const address = locale === 'en' ? CLINIC_INFO.addressEn : CLINIC_INFO.addressAr;
+  const fifthSettlementAddress =
+    locale === 'en' ? CLINIC_INFO.addressEn : CLINIC_INFO.addressAr;
+  const nasrCityAddress =
+    locale === 'en'
+      ? CLINIC_INFO.nasrCityAddressEn
+      : CLINIC_INFO.nasrCityAddressAr;
 
   return (
     <section className="dentaire-hero-pattern relative overflow-hidden pt-10 pb-0 sm:pt-14">
@@ -51,7 +56,7 @@ export default function HomeHeroV1() {
               </Link>
             </div>
 
-            {/* Verified Slogan & Clinic Location */}
+            {/* Verified Slogan & Dual Clinic Branches */}
             <div className="mt-6 flex flex-col gap-2 text-sm text-[#F7F3E9]">
               <p className="font-semibold text-[#E6C76A]">{t.hero.bottomSloganLabel}</p>
               <a
@@ -61,8 +66,15 @@ export default function HomeHeroV1() {
                 className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#C8BFA8] transition-colors hover:text-[#E6C76A]"
               >
                 <MapPin className="h-4 w-4 shrink-0 text-[#D4AF37]" aria-hidden="true" />
-                <span>{address}</span>
+                <span>{fifthSettlementAddress}</span>
               </a>
+              <Link
+                href="/appointment?branch=nasr-city"
+                className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#C8BFA8] transition-colors hover:text-[#E6C76A]"
+              >
+                <MapPin className="h-4 w-4 shrink-0 text-[#D4AF37]" aria-hidden="true" />
+                <span>{nasrCityAddress}</span>
+              </Link>
             </div>
           </motion.div>
 

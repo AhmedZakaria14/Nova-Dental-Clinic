@@ -28,8 +28,12 @@ export default function ContactSection({
 }) {
   const { locale, t } = useLanguage();
   const address = locale === 'en' ? CLINIC_INFO.addressEn : CLINIC_INFO.addressAr;
-  const shortAddress =
-    locale === 'en' ? CLINIC_INFO.shortAddressEn : CLINIC_INFO.shortAddressAr;
+  const nasrCityAddress =
+    locale === 'en'
+      ? CLINIC_INFO.nasrCityAddressEn
+      : CLINIC_INFO.nasrCityAddressAr;
+  const shortBranches =
+    locale === 'en' ? CLINIC_INFO.shortBranchesEn : CLINIC_INFO.shortBranchesAr;
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -232,10 +236,13 @@ export default function ContactSection({
                 <div className="absolute inset-x-0 bottom-0 z-10 p-6 sm:p-9 text-[#F7F3E9]">
                   <div className="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/35 bg-[#080808]/80 px-3.5 py-1 text-xs font-semibold backdrop-blur-sm">
                     <MapPin className="h-3.5 w-3.5 text-[#E6C76A]" aria-hidden="true" />
-                    <span>{shortAddress}</span>
+                    <span>{shortBranches}</span>
                   </div>
-                  <p className="mt-3 text-lg sm:text-xl font-bold leading-snug text-[#F7F3E9]">
+                  <p className="mt-3 text-base sm:text-lg font-bold leading-snug text-[#F7F3E9]">
                     {address}
+                  </p>
+                  <p className="mt-1 text-sm sm:text-base font-semibold text-[#E6C76A]">
+                    {nasrCityAddress}
                   </p>
                   <a
                     href={CLINIC_INFO.googleMapsUrl}
@@ -279,7 +286,7 @@ export default function ContactSection({
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#D4AF37]/30 bg-[#0A0908] text-[#E6C76A]">
                   <MapPin className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 space-y-2">
                   <p className="text-xs font-semibold text-[#D4AF37]">
                     {t.contactSection.addressLabel}
                   </p>
@@ -287,10 +294,15 @@ export default function ContactSection({
                     href={CLINIC_INFO.googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-1 block text-sm sm:text-base font-bold text-[#F7F3E9] transition-colors hover:text-[#E6C76A]"
+                    className="block text-sm sm:text-base font-bold text-[#F7F3E9] transition-colors hover:text-[#E6C76A]"
                   >
+                    {locale === 'en' ? '1. Fifth Settlement: ' : '١. فرع التجمع الخامس: '}
                     {address}
                   </a>
+                  <p className="text-sm sm:text-base font-bold text-[#F7F3E9]">
+                    {locale === 'en' ? '2. Nasr City: ' : '٢. فرع مدينة نصر: '}
+                    {nasrCityAddress}
+                  </p>
                 </div>
               </div>
 

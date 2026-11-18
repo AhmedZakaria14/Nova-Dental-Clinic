@@ -8,8 +8,10 @@ import { FadeInUp } from '@/components/dentaire/ScrollEffects';
 
 export default function CtaContactStrip() {
   const { locale, t } = useLanguage();
-  const shortAddress =
+  const shortFifthSettlement =
     locale === 'en' ? CLINIC_INFO.shortAddressEn : CLINIC_INFO.shortAddressAr;
+  const shortNasrCity =
+    locale === 'en' ? CLINIC_INFO.nasrCityShortEn : CLINIC_INFO.nasrCityShortAr;
 
   return (
     <section className="border-y border-[#D4AF37]/25 bg-[#12110E] py-10 text-[#F7F3E9]">
@@ -37,7 +39,7 @@ export default function CtaContactStrip() {
             </div>
           </FadeInUp>
 
-          {/* Column 2: Verified Location */}
+          {/* Column 2: Dual Branch Locations */}
           <FadeInUp
             delay={0.14}
             className="flex items-center gap-4 border-b border-[#D4AF37]/20 pb-6 lg:col-span-4 lg:border-b-0 lg:pb-0"
@@ -45,7 +47,7 @@ export default function CtaContactStrip() {
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-[#D4AF37]/30 bg-[#D4AF37]/12 text-[#E6C76A]">
               <MapPin className="h-6 w-6" aria-hidden="true" />
             </div>
-            <div>
+            <div className="space-y-0.5">
               <h2 className="text-base font-semibold text-[#F7F3E9]">
                 {t.ctaStrip.locationTitle}
               </h2>
@@ -53,10 +55,11 @@ export default function CtaContactStrip() {
                 href={CLINIC_INFO.googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1 inline-block text-sm text-[#C8BFA8] transition-colors hover:text-[#E6C76A]"
+                className="block text-sm text-[#C8BFA8] transition-colors hover:text-[#E6C76A]"
               >
-                {shortAddress}
+                {shortFifthSettlement}
               </a>
+              <p className="text-sm text-[#C8BFA8]">{shortNasrCity}</p>
             </div>
           </FadeInUp>
 

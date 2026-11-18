@@ -29,8 +29,8 @@ export default function GalleryView() {
         titleAccent="NOVA Dental Clinic"
         subtitle={
           locale === 'en'
-            ? 'Explore our calm treatment suites, clinic interior, and aesthetic care environment in Fifth Settlement.'
-            : 'جولة داخل غرف العلاج الرقمية وأجواء عيادة نوفا في مركز أوزون الطبي بالتجمع الخامس.'
+            ? 'Explore our calm treatment suites, clinic interior, and aesthetic care environment across Fifth Settlement and Nasr City.'
+            : 'جولة داخل غرف العلاج الرقمية وأجواء عيادة نوفا لطب الأسنان في فرعي التجمع الخامس ومدينة نصر.'
         }
         breadcrumbs={[{ label: t.nav.home, href: '/' }, { label: t.nav.gallery }]}
       />
