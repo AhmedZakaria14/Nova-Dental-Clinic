@@ -1,0 +1,23 @@
+export const CLINIC_INFO = {
+  brandNameAr: 'نوفا لطب الأسنان',
+  brandNameEn: 'NOVA Dental Clinic',
+  sloganAr: 'ابتسامتك مصدر سعادتنا، خلّينا نحافظ على إشراقها.',
+  sloganEn: 'Your smile is our joy, let us keep it shining.',
+  addressAr: 'مركز أوزون الطبي، التجمع الخامس، القاهرة الجديدة، مصر.',
+  addressEn: 'Ozone Medical Center, Fifth Settlement, New Cairo, Egypt.',
+  shortAddressAr: 'مركز أوزون الطبي، التجمع الخامس',
+  shortAddressEn: 'Ozone Medical Center, Fifth Settlement',
+  googleMapsUrl: 'https://maps.app.goo.gl/tKYC3q8C6vyN3TdY8',
+  primaryPhone: '01031235562',
+  primaryPhoneInternational: '+20 10 31235562',
+  primaryPhoneTel: 'tel:+201031235562',
+  additionalPhones: [
+    { display: '01555277054', tel: 'tel:+201555277054' },
+    { display: '01555077056', tel: 'tel:+201555077056' },
+  ],
+  email: 'absclinic54@gmail.com',
+  instagramUrl: 'https://www.instagram.com/nova.dental.clinic.eg/',
+  instagramHandle: '@nova.dental.clinic.eg',
+  logoPath:
+    '/assets/aistudio/504432762_122116636694925987_7825159746741963736_n__1__091ff93c.jpg',
+} as const;

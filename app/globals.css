@@ -1,0 +1,257 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@layer base {
+  :root {
+    --primary-color: #f7f3e9;
+    --secondary-color: #11100e;
+    --surface-color: #161512;
+    --text-color: #c8bfa8;
+    --accent-color: #d4af37;
+    --accent-bright: #e6c76a;
+    --black-color: #080808;
+    --white-color: #f7f3e9;
+    --divider-color: rgba(212, 175, 55, 0.18);
+    --dark-divider-color: rgba(212, 175, 55, 0.22);
+    --error-color: #e65757;
+    --font-ibm-arabic: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: clip;
+  }
+
+  body {
+    font-family: var(--font-ibm-arabic);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: var(--text-color);
+    background-color: var(--black-color);
+    overflow-x: clip;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-ibm-arabic);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--primary-color);
+  }
+}
+
+/* Dentaire Signature Pill CTA Button — Metallic Gold with Jet Black Typography */
+.dentaire-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #080808;
+  background-color: var(--accent-color);
+  border: 1px solid rgba(230, 199, 106, 0.45);
+  padding-block: 0.75rem;
+  padding-inline-start: 1.35rem;
+  padding-inline-end: 0.65rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.18);
+  transition: color 0.35s ease, border-color 0.35s ease, transform 0.2s ease, box-shadow 0.35s ease;
+}
+
+.dentaire-btn::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 0;
+  height: 100%;
+  background-color: #161512;
+  border-radius: 9999px;
+  z-index: -1;
+  transition: width 0.35s ease;
+}
+
+.dentaire-btn:hover {
+  color: var(--accent-bright);
+  border-color: var(--accent-color);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.26);
+}
+
+.dentaire-btn:hover::after {
+  width: 100%;
+}
+
+.dentaire-btn-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background-color: #080808;
+  color: var(--accent-bright);
+  transition: transform 0.35s ease, background-color 0.35s ease, color 0.35s ease;
+  flex-shrink: 0;
+}
+
+.dentaire-btn:hover .dentaire-btn-circle {
+  background-color: var(--accent-color);
+  color: #080808;
+  transform: rotate(-35deg);
+}
+
+html[dir="ltr"] .dentaire-btn:hover .dentaire-btn-circle {
+  transform: rotate(35deg);
+}
+
+.dentaire-btn-highlighted {
+  background-color: var(--accent-color);
+  color: #080808;
+}
+
+.dentaire-btn-highlighted::after {
+  background-color: var(--white-color);
+}
+
+.dentaire-btn-highlighted:hover {
+  color: #080808;
+  border-color: var(--white-color);
+}
+
+.dentaire-btn-highlighted:hover .dentaire-btn-circle {
+  background-color: #080808;
+  color: var(--accent-bright);
+}
+
+/* Dentaire Signature Service Card — Dark Obsidian with Metallic Gold Hover Curtain */
+.dentaire-service-card {
+  position: relative;
+  background-color: var(--surface-color);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+  border-radius: 30px;
+  overflow: hidden;
+  z-index: 1;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.dentaire-service-card:hover,
+.dentaire-service-card:focus-within {
+  border-color: rgba(230, 199, 106, 0.65);
+  box-shadow: 0 18px 48px 0 rgba(212, 175, 55, 0.14);
+}
+
+.dentaire-service-card::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, #e6c76a 0%, #d4af37 55%, #b89027 100%);
+  z-index: 0;
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dentaire-service-card:hover::before,
+.dentaire-service-card:focus-within::before {
+  top: 0;
+}
+
+/* Dentaire Services Split Background — Warm Onyx to Obsidian Black */
+.dentaire-services-band {
+  background-image: linear-gradient(
+    180deg,
+    var(--secondary-color) 66%,
+    var(--black-color) 34%
+  );
+}
+
+/* Architectural Gold Dot Grid & Ambient Warm Glow */
+.dentaire-hero-pattern {
+  background-color: #0a0908;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.08) 0%, transparent 45%),
+    radial-gradient(rgba(212, 175, 55, 0.12) 1px, transparent 1px);
+  background-size: 100% 100%, 28px 28px;
+}
+
+@keyframes dentaireSpinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: dentaireSpinSlow 28s linear infinite;
+}
+
+/* Lenis Smooth Scroll Base */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+/* Dentaire Image Diagonal Gold-Tinted Hover Sheen (.image-anime) */
+.dentaire-image-anime {
+  position: relative;
+  overflow: hidden;
+}
+
+.dentaire-image-anime::after {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 0%;
+  left: 50%;
+  top: 50%;
+  background-color: rgba(230, 199, 106, 0.24);
+  transform: translate(-50%, -50%) rotate(-45deg);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.dentaire-image-anime:hover::after {
+  height: 250%;
+  transition: all 600ms linear;
+  background-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-spin-slow {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
