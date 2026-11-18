@@ -12,6 +12,7 @@ const createNextConfig = (phase: string): NextConfig => ({
   },
   // Allow access to remote image placeholder.
   images: {
+    qualities: [75, 95, 100],
     remotePatterns: [
       {
         protocol: 'https',

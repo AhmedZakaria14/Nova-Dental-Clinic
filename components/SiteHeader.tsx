@@ -91,21 +91,22 @@ export default function SiteHeader() {
           : 'bg-[#0a0908]/95 backdrop-blur-md'
       } ${isHidden ? '-translate-y-full' : 'translate-y-0'}`}
     >
-      <div className="relative z-20 mx-auto flex max-w-[1300px] items-center justify-between gap-3 px-4 py-3.5 sm:gap-4 sm:px-6 lg:px-8 lg:py-[26px]">
-        {/* Official Brand Logo + Name (Dentaire .navbar-brand proportion) */}
+      <div className="relative z-20 mx-auto flex max-w-[1300px] items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8 lg:py-[18px]">
+        {/* Official Brand Logo + Name (Larger HD NOVA Mark + Dentaire Proportion) */}
         <Link
           href="/"
           onClick={closeMobileMenu}
-          className="flex min-w-0 items-center gap-2.5 sm:gap-3 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4AF37]"
+          className="flex min-w-0 items-center gap-2.5 sm:gap-3.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#D4AF37]"
         >
-          <div className="relative h-9 w-9 sm:h-12 sm:w-12 shrink-0 overflow-hidden rounded-xl border border-[#D4AF37]/30 bg-black">
+          <div className="relative h-[46px] w-[68px] sm:h-[56px] sm:w-[84px] lg:h-[64px] lg:w-[96px] shrink-0 overflow-hidden rounded-xl border border-[#D4AF37]/40 bg-black p-0.5 shadow-[0_0_18px_rgba(212,175,55,0.18)]">
             <Image
               src={CLINIC_INFO.logoPath}
               alt={brandName}
               fill
-              sizes="(max-width: 640px) 36px, 48px"
+              sizes="(max-width: 640px) 192px, 256px"
+              quality={100}
               priority
-              className="object-cover scale-125"
+              className="object-contain p-0.5"
             />
           </div>
           <span className="truncate text-[15px] sm:text-xl font-bold tracking-tight text-[#F7F3E9]">
@@ -285,7 +286,7 @@ export default function SiteHeader() {
             >
               <nav
                 aria-label={locale === 'ar' ? 'قائمة الجوال' : 'Mobile Navigation'}
-                className="mx-auto max-h-[calc(100dvh-68px)] sm:max-h-[calc(100dvh-82px)] max-w-[1300px] overflow-y-auto overscroll-contain px-4 pt-3.5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:px-6"
+                className="mx-auto max-h-[calc(100dvh-74px)] sm:max-h-[calc(100dvh-88px)] max-w-[1300px] overflow-y-auto overscroll-contain px-4 pt-3.5 pb-[max(1.25rem,env(safe-area-inset-bottom))] sm:px-6"
               >
                 {/* Compact Utility Row (wraps safely on 320px screens) */}
                 <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-[#D4AF37]/15 pb-3">

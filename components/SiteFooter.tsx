@@ -25,14 +25,15 @@ export default function SiteFooter() {
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-12">
           {/* Column 1: Brand Logo & Official Slogan */}
           <div className="lg:col-span-4">
-            <Link href="/" className="inline-flex items-center gap-3.5">
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[#D4AF37]/45 bg-black shadow-[0_0_20px_rgba(212,175,55,0.16)]">
+            <Link href="/" className="inline-flex items-center gap-4">
+              <div className="relative h-20 w-[120px] sm:h-[88px] sm:w-[132px] shrink-0 overflow-hidden rounded-2xl border border-[#D4AF37]/45 bg-black p-1 shadow-[0_0_24px_rgba(212,175,55,0.18)]">
                 <Image
                   src={CLINIC_INFO.logoPath}
                   alt={brandName}
                   fill
-                  sizes="56px"
-                  className="object-cover scale-125"
+                  sizes="(max-width: 640px) 240px, 320px"
+                  quality={100}
+                  className="object-contain p-1"
                 />
               </div>
               <span className="text-xl font-bold text-[#F7F3E9]">{brandName}</span>

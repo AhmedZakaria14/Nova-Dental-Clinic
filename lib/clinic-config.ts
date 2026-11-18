@@ -24,6 +24,5 @@ export const CLINIC_INFO = {
   email: 'absclinic54@gmail.com',
   instagramUrl: 'https://www.instagram.com/nova.dental.clinic.eg/',
   instagramHandle: '@nova.dental.clinic.eg',
-  logoPath:
-    '/assets/aistudio/504432762_122116636694925987_7825159746741963736_n__1__091ff93c.jpg',
+  logoPath: '/assets/nova-logo-hd.png',
 } as const;
