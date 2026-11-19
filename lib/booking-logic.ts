@@ -1,9 +1,24 @@
 import { Locale } from './i18n';
-import { BranchId, CLINIC_BRANCHES, DENTAL_SERVICES, DOCTORS } from './clinic-data';
+import {
+  BranchId,
+  CLINIC_BRANCHES,
+  DENTAL_SERVICES,
+  DOCTORS,
+} from './clinic-data';
+
+export type BookingStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'completed'
+  | 'cancelled'
+  | 'no-show';
+
+export type BookingSource = 'website' | 'admin-walkin';
 
 export interface BookingRecord {
   id: string;
   referenceCode: string;
+  slotId?: string;
   branchId: BranchId;
   serviceId: string;
   doctorId: string;
@@ -12,8 +27,11 @@ export interface BookingRecord {
   patientName: string;
   patientPhone: string;
   notes?: string;
-  status: 'confirmed' | 'cancelled';
+  adminNotes?: string;
+  status: BookingStatus;
+  source?: BookingSource;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface WorkingDayOption {
@@ -35,12 +53,52 @@ export interface BookingValidationResult {
   valid: boolean;
   errors: Partial<
     Record<
-      'branchId' | 'serviceId' | 'doctorId' | 'date' | 'time' | 'patientName' | 'patientPhone',
+      | 'branchId'
+      | 'serviceId'
+      | 'doctorId'
+      | 'date'
+      | 'time'
+      | 'patientName'
+      | 'patientPhone',
       string
     >
   >;
   normalizedPhone: string;
 }
+
+export interface AdminDashboardMetrics {
+  total: number;
+  pending: number;
+  confirmed: number;
+  completed: number;
+  cancelled: number;
+  noShow: number;
+  todayCount: number;
+  fifthSettlementCount: number;
+  nasrCityCount: number;
+}
+
+export interface AdminBookingFilters {
+  search: string;
+  branch: 'all' | BranchId;
+  status: 'all' | BookingStatus;
+  dateFilter: 'all' | 'today' | 'upcoming' | 'custom';
+  customDate: string;
+}
+
+// Synchronized verbatim with firebase-blueprint.json constraints
+export const BLUEPRINT_LIMITS = {
+  patientNameMin: 3,
+  patientNameMax: 120,
+  notesMax: 500,
+  adminNotesMax: 500,
+  referenceCodePattern: /^NV-[0-9]{6}$/,
+  datePattern: /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/,
+  timePattern: /^[0-9]{2}:[0-9]{2}$/,
+  phonePattern: /^01[0125][0-9]{8}$/,
+  slotIdPattern:
+    /^(fifth-settlement|nasr-city)_[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}$/,
+} as const;
 
 const ARABIC_DIGITS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
 
@@ -93,6 +151,25 @@ export function normalizeArabicNumerals(input: string): string {
   });
 }
 
+export function buildSlotId(
+  branchId: BranchId,
+  date: string,
+  time: string
+): string {
+  return `${branchId}_${date}_${time.replace(':', '-')}`;
+}
+
+export function buildBranchDateKey(branchId: BranchId, date: string): string {
+  return `${branchId}_${date}`;
+}
+
+export function getTodayIsoDate(referenceDate: Date = new Date()): string {
+  const year = referenceDate.getFullYear();
+  const month = String(referenceDate.getMonth() + 1).padStart(2, '0');
+  const day = String(referenceDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function validateEgyptianPhone(
   rawPhone: string,
   locale: Locale = 'ar'
@@ -125,7 +202,7 @@ export function validateEgyptianPhone(
     normalized = '0' + normalized.slice(2);
   }
 
-  if (!/^01[0125]\d{8}$/.test(normalized)) {
+  if (!BLUEPRINT_LIMITS.phonePattern.test(normalized)) {
     return {
       valid: false,
       normalized,
@@ -196,9 +273,17 @@ export function getUpcomingWorkingDays(
 
     if (dayOfWeek !== 5) {
       const weekdayLabelAr =
-        guard === 0 ? 'اليوم' : guard === 1 ? 'غداً' : ARABIC_WEEKDAYS[dayOfWeek];
+        guard === 0
+          ? 'اليوم'
+          : guard === 1
+            ? 'غداً'
+            : ARABIC_WEEKDAYS[dayOfWeek];
       const weekdayLabelEn =
-        guard === 0 ? 'Today' : guard === 1 ? 'Tomorrow' : ENGLISH_WEEKDAYS[dayOfWeek];
+        guard === 0
+          ? 'Today'
+          : guard === 1
+            ? 'Tomorrow'
+            : ENGLISH_WEEKDAYS[dayOfWeek];
       const displayLabelAr = `${cursor.getUTCDate()} ${ARABIC_MONTHS[cursor.getUTCMonth()]}`;
       const displayLabelEn = `${ENGLISH_MONTHS[cursor.getUTCMonth()]} ${cursor.getUTCDate()}`;
 
@@ -218,41 +303,57 @@ export function getUpcomingWorkingDays(
   return days;
 }
 
-export function getAvailableSlots(params: {
+export function getAvailableSlotsFromBookedTimes(params: {
   branchId: BranchId;
   date: string;
-  doctorId: string;
-  existingBookings: BookingRecord[];
+  bookedTimes: Iterable<string>;
 }): TimeSlotOption[] {
   const branch = CLINIC_BRANCHES.find((b) => b.id === params.branchId);
   if (!branch || !isBranchOpenOnDate(params.date)) {
     return [];
   }
 
-  const bookedTimes = new Set(
-    params.existingBookings
-      .filter(
-        (b) =>
-          b.status === 'confirmed' &&
-          b.branchId === params.branchId &&
-          b.date === params.date &&
-          (params.doctorId === 'any' || b.doctorId === params.doctorId)
-      )
-      .map((b) => b.time)
-  );
-
+  const bookedSet = new Set(params.bookedTimes);
   const slots: TimeSlotOption[] = [];
+
   for (let hour = branch.openHour; hour <= branch.closeHour; hour += 1) {
     const time = `${String(hour).padStart(2, '0')}:00`;
     slots.push({
       time,
       labelAr: formatTimeArabic(time),
       labelEn: formatTimeEnglish(time),
-      available: !bookedTimes.has(time),
+      available: !bookedSet.has(time),
     });
   }
 
   return slots;
+}
+
+export function getAvailableSlots(params: {
+  branchId: BranchId;
+  date: string;
+  doctorId: string;
+  existingBookings: BookingRecord[];
+}): TimeSlotOption[] {
+  const bookedTimes = params.existingBookings
+    .filter(
+      (b) =>
+        (b.status === 'confirmed' || b.status === 'pending') &&
+        b.branchId === params.branchId &&
+        b.date === params.date &&
+        (params.doctorId === 'any' || b.doctorId === params.doctorId)
+    )
+    .map((b) => b.time);
+
+  return getAvailableSlotsFromBookedTimes({
+    branchId: params.branchId,
+    date: params.date,
+    bookedTimes,
+  });
+}
+
+export function sanitizeTextField(raw: string | undefined, maxLen: number): string {
+  return (raw ?? '').trim().slice(0, maxLen);
 }
 
 export function validateBookingInput(
@@ -272,43 +373,58 @@ export function validateBookingInput(
   const branchValid = CLINIC_BRANCHES.some((b) => b.id === input.branchId);
   if (!branchValid) {
     errors.branchId =
-      locale === 'en' ? 'Please select the clinic location.' : 'يرجى اختيار مقر العيادة.';
+      locale === 'en'
+        ? 'Please select the clinic location.'
+        : 'يرجى اختيار مقر العيادة.';
   }
 
   const serviceValid = DENTAL_SERVICES.some((s) => s.id === input.serviceId);
   if (!serviceValid) {
     errors.serviceId =
-      locale === 'en' ? 'Please select a dental service.' : 'يرجى اختيار الخدمة الطبية.';
+      locale === 'en'
+        ? 'Please select a dental service.'
+        : 'يرجى اختيار الخدمة الطبية.';
   }
 
   const doctorValid =
     input.doctorId === 'any' || DOCTORS.some((d) => d.id === input.doctorId);
   if (!doctorValid) {
     errors.doctorId =
-      locale === 'en' ? 'Please select a specialist.' : 'يرجى اختيار الطبيب المختص.';
+      locale === 'en'
+        ? 'Please select a specialist.'
+        : 'يرجى اختيار الطبيب المختص.';
   }
 
-  if (!input.date || !/^\d{4}-\d{2}-\d{2}$/.test(input.date)) {
+  if (!input.date || !BLUEPRINT_LIMITS.datePattern.test(input.date)) {
     errors.date =
-      locale === 'en' ? 'Please select an appointment date.' : 'يرجى اختيار تاريخ الموعد.';
+      locale === 'en'
+        ? 'Please select an appointment date.'
+        : 'يرجى اختيار تاريخ الموعد.';
   } else if (!isBranchOpenOnDate(input.date)) {
     errors.date =
       locale === 'en'
         ? 'Please select another day (Fridays are unavailable).'
-        : 'يرجى اختيار يوم آخر متاح.';
+        : 'يرجى اختيار يوم آخر متاح (الجمعة إجازة).';
   }
 
-  if (!input.time || !/^\d{2}:\d{2}$/.test(input.time)) {
+  if (!input.time || !BLUEPRINT_LIMITS.timePattern.test(input.time)) {
     errors.time =
-      locale === 'en' ? 'Please choose a time slot.' : 'يرجى اختيار الساعة المناسبة.';
+      locale === 'en'
+        ? 'Please choose a time slot.'
+        : 'يرجى اختيار الساعة المناسبة.';
   }
 
   const trimmedName = (input.patientName || '').trim();
-  if (trimmedName.length < 3) {
+  if (trimmedName.length < BLUEPRINT_LIMITS.patientNameMin) {
     errors.patientName =
       locale === 'en'
         ? 'Please enter your full name (at least 3 characters).'
         : 'يرجى إدخال الاسم الكامل (٣ أحرف على الأقل).';
+  } else if (trimmedName.length > BLUEPRINT_LIMITS.patientNameMax) {
+    errors.patientName =
+      locale === 'en'
+        ? 'Name is too long (maximum 120 characters).'
+        : 'الاسم طويل جداً (الحد الأقصى ١٢٠ حرفاً).';
   }
 
   const phoneCheck = validateEgyptianPhone(input.patientPhone || '', locale);
@@ -329,4 +445,196 @@ export function formatBookingReference(seed?: number): string {
       ? (Math.abs(Math.floor(seed)) % 900000) + 100000
       : Math.floor(100000 + Math.random() * 900000);
   return `NV-${value}`;
+}
+
+export function isStatusOccupyingSlot(status: BookingStatus): boolean {
+  return status === 'pending' || status === 'confirmed' || status === 'completed';
+}
+
+export function computeDashboardMetrics(
+  bookings: BookingRecord[],
+  todayIso: string
+): AdminDashboardMetrics {
+  const metrics: AdminDashboardMetrics = {
+    total: bookings.length,
+    pending: 0,
+    confirmed: 0,
+    completed: 0,
+    cancelled: 0,
+    noShow: 0,
+    todayCount: 0,
+    fifthSettlementCount: 0,
+    nasrCityCount: 0,
+  };
+
+  for (const booking of bookings) {
+    if (booking.status === 'pending') metrics.pending += 1;
+    else if (booking.status === 'confirmed') metrics.confirmed += 1;
+    else if (booking.status === 'completed') metrics.completed += 1;
+    else if (booking.status === 'cancelled') metrics.cancelled += 1;
+    else if (booking.status === 'no-show') metrics.noShow += 1;
+
+    if (
+      booking.date === todayIso &&
+      booking.status !== 'cancelled' &&
+      booking.status !== 'no-show'
+    ) {
+      metrics.todayCount += 1;
+    }
+
+    if (booking.branchId === 'fifth-settlement') {
+      metrics.fifthSettlementCount += 1;
+    } else if (booking.branchId === 'nasr-city') {
+      metrics.nasrCityCount += 1;
+    }
+  }
+
+  return metrics;
+}
+
+export function filterAdminBookings(
+  bookings: BookingRecord[],
+  filters: AdminBookingFilters,
+  todayIso: string
+): BookingRecord[] {
+  const normalizedQuery = normalizeArabicNumerals(filters.search)
+    .trim()
+    .toLowerCase();
+
+  return bookings.filter((item) => {
+    if (filters.branch !== 'all' && item.branchId !== filters.branch) {
+      return false;
+    }
+
+    if (filters.status !== 'all' && item.status !== filters.status) {
+      return false;
+    }
+
+    if (filters.dateFilter === 'today' && item.date !== todayIso) {
+      return false;
+    }
+    if (filters.dateFilter === 'upcoming' && item.date < todayIso) {
+      return false;
+    }
+    if (
+      filters.dateFilter === 'custom' &&
+      filters.customDate &&
+      item.date !== filters.customDate
+    ) {
+      return false;
+    }
+
+    if (normalizedQuery) {
+      const haystack = [
+        item.referenceCode,
+        item.patientName,
+        item.patientPhone,
+        item.notes ?? '',
+        item.adminNotes ?? '',
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      if (!haystack.includes(normalizedQuery)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+}
+
+function escapeCsvCell(value: string): string {
+  const str = String(value ?? '');
+  const safe = /^[=+\-@\t\r]/.test(str) ? `'${str}` : str;
+  if (/[",\n\r]/.test(safe)) {
+    return `"${safe.replace(/"/g, '""')}"`;
+  }
+  return safe;
+}
+
+export function buildBookingsCsv(
+  bookings: BookingRecord[],
+  locale: Locale = 'ar'
+): string {
+  const headers =
+    locale === 'en'
+      ? [
+          'Reference',
+          'Status',
+          'Branch',
+          'Service',
+          'Date',
+          'Time',
+          'Patient Name',
+          'Phone',
+          'Source',
+          'Patient Notes',
+          'Admin Notes',
+        ]
+      : [
+          'رقم المرجع',
+          'الحالة',
+          'الفرع',
+          'الخدمة',
+          'التاريخ',
+          'الساعة',
+          'اسم المريض',
+          'رقم الهاتف',
+          'المصدر',
+          'ملاحظات المريض',
+          'ملاحظات الاستقبال',
+        ];
+
+  const rows = bookings.map((b) => {
+    const branch = CLINIC_BRANCHES.find((br) => br.id === b.branchId);
+    const service = DENTAL_SERVICES.find((s) => s.id === b.serviceId);
+    return [
+      b.referenceCode,
+      b.status,
+      branch ? (locale === 'en' ? branch.nameEn : branch.nameAr) : b.branchId,
+      service ? (locale === 'en' ? service.titleEn : service.titleAr) : b.serviceId,
+      b.date,
+      b.time,
+      b.patientName,
+      b.patientPhone,
+      b.source ?? 'website',
+      b.notes ?? '',
+      b.adminNotes ?? '',
+    ]
+      .map(escapeCsvCell)
+      .join(',');
+  });
+
+  return '\uFEFF' + [headers.map(escapeCsvCell).join(','), ...rows].join('\r\n');
+}
+
+export function buildPatientWhatsAppReplyUrl(
+  booking: BookingRecord,
+  locale: Locale = 'ar'
+): string {
+  const phoneCheck = validateEgyptianPhone(booking.patientPhone, locale);
+  const intlPhone = phoneCheck.normalized
+    ? `2${phoneCheck.normalized}`
+    : booking.patientPhone.replace(/\D/g, '');
+  const branch = CLINIC_BRANCHES.find((b) => b.id === booking.branchId);
+  const service = DENTAL_SERVICES.find((s) => s.id === booking.serviceId);
+  const branchLabel = branch
+    ? locale === 'en'
+      ? branch.nameEn
+      : branch.nameAr
+    : booking.branchId;
+  const serviceLabel = service
+    ? locale === 'en'
+      ? service.titleEn
+      : service.titleAr
+    : booking.serviceId;
+  const timeLabel = formatTimeLocalized(booking.time, locale);
+
+  const message =
+    locale === 'en'
+      ? `Hello ${booking.patientName}, this is NOVA Dental Clinic confirming your appointment (${booking.referenceCode}) for ${serviceLabel} at ${branchLabel} on ${booking.date} at ${timeLabel}.`
+      : `أهلاً ${booking.patientName}، معك فريق الاستقبال في عيادة نوفا لطب الأسنان (NOVA Dental Clinic). نؤكد لك حجزك رقم ${booking.referenceCode} لخدمة ${serviceLabel} في ${branchLabel} يوم ${booking.date} الساعة ${timeLabel}. يسعدنا استقبالك!`;
+
+  return `https://wa.me/${intlPhone}?text=${encodeURIComponent(message)}`;
 }

@@ -1,0 +1,253 @@
+{
+  "entities": {
+    "Booking": {
+      "title": "Booking",
+      "description": "A dental clinic appointment booking record containing patient PII and scheduling details. Accessible only to verified clinic admins.",
+      "type": "object",
+      "properties": {
+        "referenceCode": {
+          "type": "string",
+          "description": "Unique human-readable clinic booking reference code (e.g., NV-410281).",
+          "minLength": 9,
+          "maxLength": 12,
+          "pattern": "^NV-[0-9]{6}$"
+        },
+        "slotId": {
+          "type": "string",
+          "description": "Deterministic public slot document ID linking this booking to /booking_slots/{slotId}.",
+          "minLength": 20,
+          "maxLength": 48,
+          "pattern": "^(fifth-settlement|nasr-city)_[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}-[0-9]{2}$"
+        },
+        "branchId": {
+          "type": "string",
+          "description": "Clinic branch identifier.",
+          "enum": ["fifth-settlement", "nasr-city"],
+          "maxLength": 32
+        },
+        "serviceId": {
+          "type": "string",
+          "description": "Dental service identifier.",
+          "enum": [
+            "veneers-dsd",
+            "immediate-implants",
+            "clear-aligners",
+            "laser-whitening",
+            "micro-endo",
+            "comprehensive-exam"
+          ],
+          "maxLength": 40
+        },
+        "doctorId": {
+          "type": "string",
+          "description": "Requested clinic specialist or clinic schedule.",
+          "enum": ["any", "nova-specialist"],
+          "maxLength": 40
+        },
+        "date": {
+          "type": "string",
+          "description": "Appointment date in YYYY-MM-DD format.",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "time": {
+          "type": "string",
+          "description": "Appointment hour slot in HH:mm 24-hour format.",
+          "minLength": 5,
+          "maxLength": 5,
+          "pattern": "^[0-9]{2}:[0-9]{2}$"
+        },
+        "patientName": {
+          "type": "string",
+          "description": "Patient full name (PII).",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "patientPhone": {
+          "type": "string",
+          "description": "Normalized 11-digit Egyptian mobile number (PII).",
+          "minLength": 11,
+          "maxLength": 15,
+          "pattern": "^01[0125][0-9]{8}$"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional patient inquiry or preferred callback note (PII).",
+          "maxLength": 500
+        },
+        "adminNotes": {
+          "type": "string",
+          "description": "Internal reception or doctor notes manageable only by admins.",
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "description": "Current appointment workflow status.",
+          "enum": ["pending", "confirmed", "completed", "cancelled", "no-show"],
+          "maxLength": 20
+        },
+        "source": {
+          "type": "string",
+          "description": "Booking creation channel.",
+          "enum": ["website", "admin-walkin"],
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the booking was created (immutable)."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the booking was last updated."
+        }
+      },
+      "required": [
+        "referenceCode",
+        "slotId",
+        "branchId",
+        "serviceId",
+        "doctorId",
+        "date",
+        "time",
+        "patientName",
+        "patientPhone",
+        "status",
+        "source",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "BookingSlot": {
+      "title": "BookingSlot",
+      "description": "Public non-PII availability lock document for a specific branch, date, and hour slot to prevent double booking.",
+      "type": "object",
+      "properties": {
+        "bookingId": {
+          "type": "string",
+          "description": "ID of the active /bookings/{bookingId} holding this slot.",
+          "minLength": 4,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "branchId": {
+          "type": "string",
+          "description": "Clinic branch identifier.",
+          "enum": ["fifth-settlement", "nasr-city"],
+          "maxLength": 32
+        },
+        "branchDate": {
+          "type": "string",
+          "description": "Deterministic branch and date composite key ({branchId}_{YYYY-MM-DD}) for single-field availability queries.",
+          "minLength": 20,
+          "maxLength": 40,
+          "pattern": "^(fifth-settlement|nasr-city)_[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "date": {
+          "type": "string",
+          "description": "Slot date in YYYY-MM-DD format.",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "time": {
+          "type": "string",
+          "description": "Slot hour in HH:mm format.",
+          "minLength": 5,
+          "maxLength": 5,
+          "pattern": "^[0-9]{2}:[0-9]{2}$"
+        },
+        "status": {
+          "type": "string",
+          "description": "Whether the slot is currently occupied or released for re-booking.",
+          "enum": ["booked", "released"],
+          "maxLength": 16
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when slot lock was first created (immutable)."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when slot lock was last updated."
+        }
+      },
+      "required": [
+        "bookingId",
+        "branchId",
+        "branchDate",
+        "date",
+        "time",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ClinicAdmin": {
+      "title": "ClinicAdmin",
+      "description": "Authorized clinic staff record granting access to /admin dashboard.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Verified Google account email address of the admin.",
+          "minLength": 5,
+          "maxLength": 160
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Staff display name.",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "role": {
+          "type": "string",
+          "description": "Administrative role level.",
+          "enum": ["super_admin", "receptionist"],
+          "maxLength": 24
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Whether this admin account currently has active dashboard access."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when admin access was granted."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of latest update."
+        }
+      },
+      "required": [
+        "email",
+        "displayName",
+        "role",
+        "active",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/Booking" },
+      "description": "Private patient appointment bookings containing PII. Public can create atomically with a slot lock; only verified clinic admins can read, update, or delete."
+    },
+    "/booking_slots/{slotId}": {
+      "schema": { "$ref": "#/entities/BookingSlot" },
+      "description": "Public non-PII slot availability index keyed by {branchId}_{date}_{HH-mm}. Prevents double-booking and allows public availability checks without exposing patient PII."
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/ClinicAdmin" },
+      "description": "Clinic admin RBAC registry. Readable by self or admins; writable only by verified admins."
+    }
+  }
+}

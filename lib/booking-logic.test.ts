@@ -1,11 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  buildBookingsCsv,
+  buildBranchDateKey,
+  buildPatientWhatsAppReplyUrl,
+  buildSlotId,
+  computeDashboardMetrics,
+  filterAdminBookings,
   formatBookingReference,
   formatTimeLocalized,
   getAvailableSlots,
+  getAvailableSlotsFromBookedTimes,
   getUpcomingWorkingDays,
   isBranchOpenOnDate,
+  isStatusOccupyingSlot,
   normalizeArabicNumerals,
   validateBookingInput,
   validateEgyptianPhone,
@@ -169,4 +177,142 @@ test('getAvailableSlots tracks Fifth Settlement and Nasr City branch availabilit
 test('formatBookingReference returns NV-prefixed code', () => {
   assert.equal(formatBookingReference(42), 'NV-100042');
   assert.match(formatBookingReference(), /^NV-\d{6}$/);
+});
+
+test('buildSlotId and buildBranchDateKey generate deterministic Firestore keys', () => {
+  assert.equal(
+    buildSlotId('fifth-settlement', '2026-11-21', '14:00'),
+    'fifth-settlement_2026-11-21_14-00'
+  );
+  assert.equal(
+    buildBranchDateKey('nasr-city', '2026-11-21'),
+    'nasr-city_2026-11-21'
+  );
+
+  const slots = getAvailableSlotsFromBookedTimes({
+    branchId: 'nasr-city',
+    date: '2026-11-21',
+    bookedTimes: ['13:00', '18:00'],
+  });
+  assert.equal(slots.find((s) => s.time === '13:00')?.available, false);
+  assert.equal(slots.find((s) => s.time === '14:00')?.available, true);
+  assert.equal(slots.find((s) => s.time === '18:00')?.available, false);
+});
+
+test('computeDashboardMetrics and filterAdminBookings compute accurate KPIs and filters', () => {
+  const sample: BookingRecord[] = [
+    {
+      id: 'bk_1',
+      referenceCode: 'NV-200001',
+      branchId: 'fifth-settlement',
+      serviceId: 'veneers-dsd',
+      doctorId: 'nova-specialist',
+      date: '2026-11-19',
+      time: '14:00',
+      patientName: 'نور الدين خالد',
+      patientPhone: '01031235562',
+      status: 'pending',
+      source: 'website',
+      createdAt: '2026-11-19T10:00:00.000Z',
+    },
+    {
+      id: 'bk_2',
+      referenceCode: 'NV-200002',
+      branchId: 'nasr-city',
+      serviceId: 'immediate-implants',
+      doctorId: 'nova-specialist',
+      date: '2026-11-19',
+      time: '16:00',
+      patientName: 'مريم طارق',
+      patientPhone: '01555277054',
+      status: 'confirmed',
+      source: 'admin-walkin',
+      createdAt: '2026-11-19T11:00:00.000Z',
+    },
+    {
+      id: 'bk_3',
+      referenceCode: 'NV-200003',
+      branchId: 'nasr-city',
+      serviceId: 'clear-aligners',
+      doctorId: 'nova-specialist',
+      date: '2026-11-21',
+      time: '15:00',
+      patientName: 'هشام عادل',
+      patientPhone: '01112233445',
+      status: 'cancelled',
+      source: 'website',
+      createdAt: '2026-11-19T12:00:00.000Z',
+    },
+  ];
+
+  const metrics = computeDashboardMetrics(sample, '2026-11-19');
+  assert.equal(metrics.total, 3);
+  assert.equal(metrics.pending, 1);
+  assert.equal(metrics.confirmed, 1);
+  assert.equal(metrics.cancelled, 1);
+  assert.equal(metrics.todayCount, 2);
+  assert.equal(metrics.fifthSettlementCount, 1);
+  assert.equal(metrics.nasrCityCount, 2);
+
+  assert.equal(isStatusOccupyingSlot('pending'), true);
+  assert.equal(isStatusOccupyingSlot('confirmed'), true);
+  assert.equal(isStatusOccupyingSlot('cancelled'), false);
+  assert.equal(isStatusOccupyingSlot('no-show'), false);
+
+  const filteredByPhone = filterAdminBookings(
+    sample,
+    {
+      search: '٠١٥٥٥٢٧٧٠٥٤',
+      branch: 'all',
+      status: 'all',
+      dateFilter: 'all',
+      customDate: '',
+    },
+    '2026-11-19'
+  );
+  assert.equal(filteredByPhone.length, 1);
+  assert.equal(filteredByPhone[0].id, 'bk_2');
+
+  const filteredByBranch = filterAdminBookings(
+    sample,
+    {
+      search: '',
+      branch: 'nasr-city',
+      status: 'confirmed',
+      dateFilter: 'today',
+      customDate: '',
+    },
+    '2026-11-19'
+  );
+  assert.equal(filteredByBranch.length, 1);
+  assert.equal(filteredByBranch[0].referenceCode, 'NV-200002');
+});
+
+test('buildBookingsCsv escapes spreadsheet formulas and buildPatientWhatsAppReplyUrl formats valid wa.me URL', () => {
+  const sample: BookingRecord[] = [
+    {
+      id: 'bk_csv',
+      referenceCode: 'NV-300001',
+      branchId: 'fifth-settlement',
+      serviceId: 'veneers-dsd',
+      doctorId: 'nova-specialist',
+      date: '2026-11-21',
+      time: '14:00',
+      patientName: '=CMD|calc',
+      patientPhone: '01031235562',
+      notes: 'Note with "quotes", comma',
+      status: 'confirmed',
+      source: 'website',
+      createdAt: '2026-11-19T10:00:00.000Z',
+    },
+  ];
+
+  const csv = buildBookingsCsv(sample, 'en');
+  assert.ok(csv.startsWith('\uFEFF'));
+  assert.ok(csv.includes("'=CMD|calc"));
+  assert.ok(csv.includes('"Note with ""quotes"", comma"'));
+
+  const waUrl = buildPatientWhatsAppReplyUrl(sample[0], 'ar');
+  assert.ok(waUrl.startsWith('https://wa.me/201031235562?text='));
+  assert.ok(decodeURIComponent(waUrl).includes('NV-300001'));
 });

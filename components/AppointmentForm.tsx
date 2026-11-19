@@ -9,8 +9,8 @@ import {
   Clock,
   ListChecks,
   MapPin,
+  MessageCircle,
   Phone,
-  Trash2,
   UserRound,
   X,
 } from 'lucide-react';
@@ -22,16 +22,24 @@ import {
   DOCTORS,
 } from '@/lib/clinic-data';
 import {
+  BLUEPRINT_LIMITS,
   BookingRecord,
   formatTimeLocalized,
+  getAvailableSlotsFromBookedTimes,
   getUpcomingWorkingDays,
-  TimeSlotOption,
 } from '@/lib/booking-logic';
+import {
+  BookingValidationError,
+  createFirestoreBooking,
+  SlotAlreadyBookedError,
+  subscribeBookedTimesForBranchDate,
+} from '@/lib/firestore-bookings';
 import { useLanguage } from '@/components/LanguageProvider';
+import FirebaseErrorBoundary from '@/components/FirebaseErrorBoundary';
 
 const STORAGE_KEY = 'nova_dental_my_bookings_v1';
 
-export default function AppointmentForm() {
+function AppointmentFormContent() {
   const { locale, t } = useLanguage();
   const searchParams = useSearchParams();
 
@@ -77,8 +85,8 @@ export default function AppointmentForm() {
   const [patientPhone, setPatientPhone] = useState('');
   const [notes, setNotes] = useState('');
 
-  const [slots, setSlots] = useState<TimeSlotOption[]>([]);
-  const [loadingSlots, setLoadingSlots] = useState(true);
+  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
+  const [loadedSlotKey, setLoadedSlotKey] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [confirmedBooking, setConfirmedBooking] =
@@ -87,7 +95,7 @@ export default function AppointmentForm() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [myBookings, setMyBookings] = useState<BookingRecord[]>([]);
 
-  // Hydrate saved bookings asynchronously to comply with React 19 ESLint rules
+  // Hydrate patient's local booking receipt history asynchronously
   useEffect(() => {
     let active = true;
     async function loadSaved() {
@@ -111,41 +119,45 @@ export default function AppointmentForm() {
     };
   }, []);
 
-  // Fetch available slots whenever date or doctor changes
+  const currentSlotKey = `${branchId}_${date}`;
+  const loadingSlots = Boolean(date) && loadedSlotKey !== currentSlotKey;
+
+  // Subscribe in real time to public non-PII slot availability in Firestore
   useEffect(() => {
     if (!date) return;
     let active = true;
+    const key = `${branchId}_${date}`;
 
-    async function fetchSlots() {
-      setLoadingSlots(true);
-      try {
-        const res = await fetch(
-          `/api/bookings?branchId=${encodeURIComponent(
-            branchId
-          )}&date=${encodeURIComponent(date)}&doctorId=${encodeURIComponent(
-            doctorId
-          )}`
-        );
-        const data = await res.json();
-        if (active && Array.isArray(data.slots)) {
-          setSlots(data.slots);
-        }
-      } catch {
-        if (active) {
-          setSlots([]);
-        }
-      } finally {
-        if (active) {
-          setLoadingSlots(false);
-        }
+    const unsubscribe = subscribeBookedTimesForBranchDate(
+      branchId,
+      date,
+      (times) => {
+        if (!active) return;
+        setBookedTimes(times);
+        setLoadedSlotKey(key);
+      },
+      () => {
+        if (!active) return;
+        setBookedTimes([]);
+        setLoadedSlotKey(key);
       }
-    }
+    );
 
-    void fetchSlots();
     return () => {
       active = false;
+      unsubscribe();
     };
-  }, [branchId, date, doctorId]);
+  }, [branchId, date]);
+
+  const slots = useMemo(
+    () =>
+      getAvailableSlotsFromBookedTimes({
+        branchId,
+        date,
+        bookedTimes,
+      }),
+    [branchId, date, bookedTimes]
+  );
 
   const effectiveTime = useMemo(() => {
     const selectedIsAvailable = slots.some(
@@ -168,29 +180,19 @@ export default function AppointmentForm() {
     setErrors({});
 
     try {
-      const res = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          locale,
-          branchId,
-          serviceId,
-          doctorId,
-          date,
-          time: effectiveTime,
-          patientName,
-          patientPhone,
-          notes,
-        }),
+      const created = await createFirestoreBooking({
+        locale,
+        branchId,
+        serviceId,
+        doctorId,
+        date,
+        time: effectiveTime,
+        patientName,
+        patientPhone,
+        notes,
+        source: 'website',
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        setErrors(data.errors || { form: data.error || 'Booking error' });
-        return;
-      }
-
-      const created: BookingRecord = data.booking;
       setConfirmedBooking(created);
 
       setMyBookings((prev) => {
@@ -206,40 +208,49 @@ export default function AppointmentForm() {
       setPatientName('');
       setPatientPhone('');
       setNotes('');
-    } catch {
-      setErrors({
-        form:
-          locale === 'en'
-            ? 'Unable to save booking. Please call 01031235562.'
-            : 'تعذر إرسال الحجز، يرجى الاتصال على 01031235562.',
-      });
+    } catch (err) {
+      if (err instanceof BookingValidationError) {
+        setErrors(err.errors);
+      } else if (err instanceof SlotAlreadyBookedError) {
+        setErrors({ time: err.message, form: err.message });
+      } else {
+        setErrors({
+          form:
+            locale === 'en'
+              ? 'Unable to save booking right now. Please try again or call 01031235562.'
+              : 'تعذر حفظ الحجز حالياً، يرجى المحاولة مرة أخرى أو الاتصال على 01031235562.',
+        });
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleCancelBooking = async (bookingId: string) => {
-    try {
-      await fetch('/api/bookings', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: bookingId, status: 'cancelled' }),
-      });
-    } catch {
-      // keep local status synced even if server memory reset
-    }
+  const buildBookingWhatsAppUrl = (booking: BookingRecord, action: 'confirm' | 'modify') => {
+    const br = CLINIC_BRANCHES.find((b) => b.id === booking.branchId);
+    const srv = DENTAL_SERVICES.find((s) => s.id === booking.serviceId);
+    const branchLabel = br
+      ? locale === 'en'
+        ? br.nameEn
+        : br.nameAr
+      : booking.branchId;
+    const serviceLabel = srv
+      ? locale === 'en'
+        ? srv.titleEn
+        : srv.titleAr
+      : booking.serviceId;
+    const timeLabel = formatTimeLocalized(booking.time, locale);
 
-    setMyBookings((prev) => {
-      const next: BookingRecord[] = prev.map((item) =>
-        item.id === bookingId ? { ...item, status: 'cancelled' } : item
-      );
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      } catch {
-        // ignore storage errors
-      }
-      return next;
-    });
+    const customMessage =
+      action === 'confirm'
+        ? locale === 'en'
+          ? `Hello NOVA Dental Clinic, I just booked appointment ${booking.referenceCode} (${serviceLabel}) at ${branchLabel} on ${booking.date} at ${timeLabel}. Name: ${booking.patientName}.`
+          : `مرحباً عيادة نوفا لطب الأسنان، قمت بحجز موعد برقم مرجع ${booking.referenceCode} لخدمة (${serviceLabel}) في ${branchLabel} يوم ${booking.date} الساعة ${timeLabel}. الاسم: ${booking.patientName}.`
+        : locale === 'en'
+          ? `Hello NOVA Dental Clinic, I would like to modify or cancel my appointment ${booking.referenceCode} scheduled for ${booking.date} at ${timeLabel} (${branchLabel}).`
+          : `مرحباً عيادة نوفا لطب الأسنان، أرغب في تعديل أو إلغاء موعدي رقم ${booking.referenceCode} المسجل يوم ${booking.date} الساعة ${timeLabel} (${branchLabel}).`;
+
+    return `https://wa.me/${CLINIC_INFO.whatsappNumber}?text=${encodeURIComponent(customMessage)}`;
   };
 
   return (
@@ -270,7 +281,7 @@ export default function AppointmentForm() {
             <span>{t.appointmentPage.myBookingsBtn}</span>
             {myBookings.length > 0 && (
               <span className="inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-[#D4AF37] px-1.5 text-xs font-bold text-[#080808] tabular-nums">
-                {myBookings.filter((b) => b.status === 'confirmed').length}
+                {myBookings.length}
               </span>
             )}
           </button>
@@ -331,6 +342,19 @@ export default function AppointmentForm() {
             </div>
 
             <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href={buildBookingWhatsAppUrl(confirmedBooking, 'confirm')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-3 text-sm font-bold text-[#080808] transition-colors hover:bg-[#2be06f]"
+              >
+                <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                <span>
+                  {locale === 'en'
+                    ? 'Send Confirmation on WhatsApp'
+                    : 'إرسال تأكيد الحجز عبر واتساب'}
+                </span>
+              </a>
               <button
                 type="button"
                 onClick={() => setConfirmedBooking(null)}
@@ -543,6 +567,7 @@ export default function AppointmentForm() {
                   <input
                     id="booking-name"
                     type="text"
+                    maxLength={BLUEPRINT_LIMITS.patientNameMax}
                     value={patientName}
                     onChange={(e) => setPatientName(e.target.value)}
                     placeholder={t.appointmentPage.namePlaceholder}
@@ -566,6 +591,7 @@ export default function AppointmentForm() {
                     id="booking-phone"
                     type="tel"
                     dir="ltr"
+                    maxLength={15}
                     value={patientPhone}
                     onChange={(e) => setPatientPhone(e.target.value)}
                     placeholder={t.appointmentPage.phonePlaceholder}
@@ -589,6 +615,7 @@ export default function AppointmentForm() {
                 <textarea
                   id="booking-notes"
                   rows={3}
+                  maxLength={BLUEPRINT_LIMITS.notesMax}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={t.appointmentPage.notesPlaceholder}
@@ -740,7 +767,6 @@ export default function AppointmentForm() {
                     (s) => s.id === booking.serviceId
                   );
                   const doc = DOCTORS.find((d) => d.id === booking.doctorId);
-                  const isConfirmed = booking.status === 'confirmed';
 
                   return (
                     <div
@@ -754,16 +780,8 @@ export default function AppointmentForm() {
                         >
                           {booking.referenceCode}
                         </span>
-                        <span
-                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                            isConfirmed
-                              ? 'border border-emerald-500/35 bg-emerald-950/60 text-emerald-300'
-                              : 'border border-[#D4AF37]/15 bg-[#221F1A] text-[#9E9580]'
-                          }`}
-                        >
-                          {isConfirmed
-                            ? t.appointmentPage.statusConfirmed
-                            : t.appointmentPage.statusCancelled}
+                        <span className="rounded-full border border-[#D4AF37]/30 bg-[#1E1A11] px-2.5 py-0.5 text-xs font-semibold text-[#E6C76A]">
+                          {locale === 'en' ? 'Submitted' : 'تم التسجيل'}
                         </span>
                       </div>
 
@@ -801,16 +819,21 @@ export default function AppointmentForm() {
                         {formatTimeLocalized(booking.time, locale)}
                       </p>
 
-                      {isConfirmed && (
-                        <button
-                          type="button"
-                          onClick={() => handleCancelBooking(booking.id)}
-                          className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#E65757] hover:underline cursor-pointer"
+                      <div className="mt-3 flex items-center gap-3 border-t border-[#D4AF37]/15 pt-3">
+                        <a
+                          href={buildBookingWhatsAppUrl(booking, 'modify')}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#25D366] hover:underline"
                         >
-                          <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                          <span>{t.appointmentPage.cancelBooking}</span>
-                        </button>
-                      )}
+                          <MessageCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                          <span>
+                            {locale === 'en'
+                              ? 'Modify / Cancel via WhatsApp'
+                              : 'تعديل أو إلغاء عبر واتساب'}
+                          </span>
+                        </a>
+                      </div>
                     </div>
                   );
                 })
@@ -820,5 +843,13 @@ export default function AppointmentForm() {
         </div>
       )}
     </section>
+  );
+}
+
+export default function AppointmentForm() {
+  return (
+    <FirebaseErrorBoundary>
+      <AppointmentFormContent />
+    </FirebaseErrorBoundary>
   );
 }

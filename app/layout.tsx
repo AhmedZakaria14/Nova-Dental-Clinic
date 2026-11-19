@@ -5,6 +5,7 @@ import './globals.css';
 import { CLINIC_INFO } from '@/lib/clinic-config';
 import { DICTIONARIES, Locale } from '@/lib/i18n';
 import { LanguageProvider } from '@/components/LanguageProvider';
+import { FirebaseProvider } from '@/components/FirebaseProvider';
 import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
@@ -139,14 +140,16 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(clinicSchema) }}
         />
         <LanguageProvider initialLocale={initialLocale}>
-          <SmoothScrollProvider>
-            <div className="flex min-h-screen flex-col">
-              <SiteHeader />
-              <main className="flex-1">{children}</main>
-              <SiteFooter />
-            </div>
-            <FloatingWhatsAppButton />
-          </SmoothScrollProvider>
+          <FirebaseProvider>
+            <SmoothScrollProvider>
+              <div className="flex min-h-screen flex-col">
+                <SiteHeader />
+                <main className="flex-1">{children}</main>
+                <SiteFooter />
+              </div>
+              <FloatingWhatsAppButton />
+            </SmoothScrollProvider>
+          </FirebaseProvider>
         </LanguageProvider>
       </body>
     </html>
