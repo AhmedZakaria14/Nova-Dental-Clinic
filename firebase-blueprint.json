@@ -29,12 +29,18 @@
           "type": "string",
           "description": "Dental service identifier.",
           "enum": [
-            "veneers-dsd",
-            "immediate-implants",
-            "clear-aligners",
+            "comprehensive-exam",
+            "checkup-airflow",
             "laser-whitening",
+            "dental-fillings",
+            "cosmetic-fillings",
+            "veneers-dsd",
             "micro-endo",
-            "comprehensive-exam"
+            "clear-aligners",
+            "immediate-implants",
+            "crowns-prosthetics",
+            "cosmetic-dentistry",
+            "dental-extractions"
           ],
           "maxLength": 40
         },
@@ -435,12 +441,18 @@
           "type": "string",
           "description": "Associated dental service ID for one-click booking.",
           "enum": [
-            "veneers-dsd",
-            "immediate-implants",
-            "clear-aligners",
+            "comprehensive-exam",
+            "checkup-airflow",
             "laser-whitening",
+            "dental-fillings",
+            "cosmetic-fillings",
+            "veneers-dsd",
             "micro-endo",
-            "comprehensive-exam"
+            "clear-aligners",
+            "immediate-implants",
+            "crowns-prosthetics",
+            "cosmetic-dentistry",
+            "dental-extractions"
           ],
           "maxLength": 40
         },

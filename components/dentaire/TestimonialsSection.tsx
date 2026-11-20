@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { ArrowLeft, ArrowRight, MessageSquareQuote, Quote } from 'lucide-react';
-import smileImg from '@/src/assets/images/smile_transformation_showcase_1794988567315.jpg';
+import smileImg from '@/src/assets/images/male_smile_showcase_1795203941309.jpg';
 import { PATIENT_TESTIMONIALS } from '@/lib/clinic-data';
 import { useLanguage } from '@/components/LanguageProvider';
 import {

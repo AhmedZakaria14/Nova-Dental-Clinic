@@ -3,8 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpLeft, ArrowUpRight } from 'lucide-react';
-import suiteImg from '@/src/assets/images/dental_treatment_suite_1794988565232.jpg';
-import smileImg from '@/src/assets/images/smile_transformation_showcase_1794988567315.jpg';
+import suiteImg from '@/src/assets/images/male_treatment_suite_1795203940951.jpg';
+import smileImg from '@/src/assets/images/male_smile_showcase_1795203941309.jpg';
 import { BlogArticle } from '@/lib/clinic-data';
 import { useLanguage } from '@/components/LanguageProvider';
 

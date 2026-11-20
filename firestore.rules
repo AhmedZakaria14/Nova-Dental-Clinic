@@ -77,12 +77,18 @@ service cloud.firestore {
 
     function isValidService(val) {
       return val is string && val.size() <= 40 && val in [
-        'veneers-dsd',
-        'immediate-implants',
-        'clear-aligners',
+        'comprehensive-exam',
+        'checkup-airflow',
         'laser-whitening',
+        'dental-fillings',
+        'cosmetic-fillings',
+        'veneers-dsd',
         'micro-endo',
-        'comprehensive-exam'
+        'clear-aligners',
+        'immediate-implants',
+        'crowns-prosthetics',
+        'cosmetic-dentistry',
+        'dental-extractions'
       ];
     }
 

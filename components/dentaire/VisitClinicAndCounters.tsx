@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import { Building2 } from 'lucide-react';
 import { motion, useScroll, useTransform } from 'motion/react';
-import suiteImg from '@/src/assets/images/dental_treatment_suite_1794988565232.jpg';
+import suiteImg from '@/src/assets/images/male_treatment_suite_1795203940951.jpg';
 import { useLanguage } from '@/components/LanguageProvider';
 import AppointmentButton from '@/components/AppointmentButton';
 import {

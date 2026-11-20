@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import { Award, CheckCircle2, HeartHandshake } from 'lucide-react';
-import smileImg from '@/src/assets/images/smile_transformation_showcase_1794988567315.jpg';
-import treatmentSuiteImg from '@/src/assets/images/dental_treatment_suite_1794988565232.jpg';
+import smileImg from '@/src/assets/images/male_smile_showcase_1795203941309.jpg';
+import treatmentSuiteImg from '@/src/assets/images/male_treatment_suite_1795203940951.jpg';
 import { useLanguage } from '@/components/LanguageProvider';
 import AppointmentButton from '@/components/AppointmentButton';
 import {

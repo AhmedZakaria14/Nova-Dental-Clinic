@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import smileImg from '@/src/assets/images/smile_transformation_showcase_1794988567315.jpg';
+import smileImg from '@/src/assets/images/male_smile_showcase_1795203941309.jpg';
 import { GALLERY_ITEMS } from '@/lib/clinic-data';
 import { useLanguage } from '@/components/LanguageProvider';
 import PageHeader from '@/components/PageHeader';

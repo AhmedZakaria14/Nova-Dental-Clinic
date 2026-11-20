@@ -28,15 +28,21 @@ export default function ServicesView() {
       <section className="bg-[#080808] py-14 sm:py-20">
         <div className="mx-auto max-w-[1300px] px-4 sm:px-6 lg:px-8">
           {/* Category Tabs */}
-          <div className="mb-10 flex flex-wrap items-center justify-center gap-2.5">
+          <div
+            role="tablist"
+            aria-label={locale === 'en' ? 'Service categories' : 'تصنيفات الخدمات'}
+            className="mb-10 flex flex-wrap items-center justify-center gap-2.5"
+          >
             {SERVICE_CATEGORIES.map((cat) => {
               const active = category === cat.id;
               return (
                 <button
                   key={cat.id}
                   type="button"
+                  role="tab"
+                  aria-selected={active}
                   onClick={() => setCategory(cat.id)}
-                  className={`min-h-[42px] rounded-full px-5 py-2 text-sm font-bold transition-colors cursor-pointer ${
+                  className={`min-h-[42px] rounded-full px-5 py-2 text-sm font-bold whitespace-nowrap transition-colors cursor-pointer ${
                     active
                       ? 'bg-[#D4AF37] text-[#080808] shadow-md'
                       : 'border border-[#D4AF37]/30 bg-[#161512] text-[#F7F3E9] hover:border-[#E6C76A] hover:text-[#E6C76A]'

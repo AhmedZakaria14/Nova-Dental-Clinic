@@ -10,7 +10,7 @@ import {
   Clock,
   Phone,
 } from 'lucide-react';
-import suiteImg from '@/src/assets/images/dental_treatment_suite_1794988565232.jpg';
+import { SERVICE_IMAGES } from '@/components/service-images';
 import { CLINIC_INFO } from '@/lib/clinic-config';
 import { DENTAL_SERVICES, DentalService } from '@/lib/clinic-data';
 import { useLanguage } from '@/components/LanguageProvider';
@@ -34,6 +34,7 @@ export default function ServiceDetailView({
     locale === 'en' ? service.technologyEn : service.technologyAr;
   const highlights =
     locale === 'en' ? service.highlightsEn : service.highlightsAr;
+  const heroImage = SERVICE_IMAGES[service.imageKey];
 
   return (
     <>
@@ -56,20 +57,20 @@ export default function ServiceDetailView({
                 <h2 className="text-lg font-bold text-[#F7F3E9]">
                   {locale === 'en' ? 'Our Dental Services' : 'خدمات العيادة'}
                 </h2>
-                <ul className="mt-5 space-y-2.5">
+                <ul className="mt-5 space-y-2">
                   {DENTAL_SERVICES.map((item) => {
                     const active = item.slug === service.slug;
                     return (
                       <li key={item.id}>
                         <Link
                           href={`/services/${item.slug}`}
-                          className={`flex items-center justify-between rounded-[14px] px-4 py-3 text-sm font-bold transition-colors ${
+                          className={`flex items-center justify-between gap-2 rounded-[14px] px-4 py-2.5 text-sm font-bold transition-colors ${
                             active
                               ? 'bg-[#D4AF37] text-[#080808]'
                               : 'border border-[#D4AF37]/15 bg-[#0A0908] text-[#F7F3E9] hover:border-[#E6C76A] hover:text-[#E6C76A]'
                           }`}
                         >
-                          <span>
+                          <span className="truncate">
                             {locale === 'en' ? item.titleEn : item.titleAr}
                           </span>
                           <ArrowIcon className="h-4 w-4 shrink-0" />
@@ -116,23 +117,25 @@ export default function ServiceDetailView({
 
             {/* Main Service Content */}
             <div className="lg:col-span-8">
-              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-[36px] border border-[#D4AF37]/25 bg-[#161512]">
+              <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full overflow-hidden rounded-[32px] border border-[#D4AF37]/25 bg-[#161512]">
                 <Image
-                  src={suiteImg}
+                  src={heroImage}
                   alt={title}
                   fill
+                  priority
                   referrerPolicy="no-referrer"
                   sizes="(max-width: 1024px) 100vw, 820px"
                   className="object-cover"
                 />
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                <span className="rounded-full border border-[#D4AF37]/35 bg-[#D4AF37]/15 px-4 py-1.5 text-xs font-bold text-[#E6C76A]">
-                  {category}
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/25 bg-[#161512] px-4 py-1.5 text-xs font-semibold text-[#F7F3E9]">
-                  <Clock className="h-3.5 w-3.5 text-[#D4AF37]" />
+              <div className="mt-7 flex flex-wrap items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#C8BFA8]">
+                <span className="text-[#E6C76A] tabular-nums">{service.number}</span>
+                <span aria-hidden="true">·</span>
+                <span className="text-[#E6C76A]">{category}</span>
+                <span aria-hidden="true">·</span>
+                <span className="inline-flex items-center gap-1.5 tabular-nums">
+                  <Clock className="h-3.5 w-3.5 text-[#D4AF37]" aria-hidden="true" />
                   <span>
                     {service.durationMinutes}{' '}
                     {locale === 'en' ? 'min session' : 'دقيقة للجلسة'}
@@ -140,7 +143,7 @@ export default function ServiceDetailView({
                 </span>
               </div>
 
-              <h2 className="mt-5 text-2xl sm:text-3xl font-bold text-[#F7F3E9]">
+              <h2 className="mt-4 text-2xl sm:text-3xl font-bold text-[#F7F3E9]">
                 {title}
               </h2>
 

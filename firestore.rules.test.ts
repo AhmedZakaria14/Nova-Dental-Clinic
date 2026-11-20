@@ -143,3 +143,29 @@ test('Dirty Dozen 10-12: server timestamps, immutable createdAt, action-based up
     /match \/offers\/\{offerId\}[\s\S]*?allow create: if isValidId\(offerId\)\s*&& isValidOfferData\(incoming\(\)\)\s*&& isAdmin\(\)/
   );
 });
+
+test('all 12 dental services are unique and synchronized verbatim across clinic-data, blueprint, and firestore.rules', async () => {
+  const { DENTAL_SERVICES } = await import('./lib/clinic-data');
+  assert.equal(DENTAL_SERVICES.length, 12);
+
+  const ids = DENTAL_SERVICES.map((s) => s.id);
+  const slugs = DENTAL_SERVICES.map((s) => s.slug);
+  const imageKeys = DENTAL_SERVICES.map((s) => s.imageKey);
+
+  assert.equal(new Set(ids).size, 12, 'Service IDs must be unique');
+  assert.equal(new Set(slugs).size, 12, 'Service slugs must be unique');
+  assert.equal(new Set(imageKeys).size, 12, 'Each service must have a unique expressive image');
+
+  const bookingEnum = blueprint.entities.Booking.properties.serviceId.enum as string[];
+  const offerEnum = blueprint.entities.ClinicOffer.properties.serviceId.enum as string[];
+
+  assert.deepEqual([...bookingEnum].sort(), [...ids].sort());
+  assert.deepEqual([...offerEnum].sort(), [...ids].sort());
+
+  for (const id of ids) {
+    assert.ok(
+      rulesText.includes(`'${id}'`),
+      `firestore.rules isValidService() is missing serviceId: ${id}`
+    );
+  }
+});
