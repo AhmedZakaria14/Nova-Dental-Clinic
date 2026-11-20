@@ -3,6 +3,7 @@
 import { useLanguage } from '@/components/LanguageProvider';
 import PageHeader from '@/components/PageHeader';
 import ContactSection from '@/components/ContactSection';
+import BranchLocatorSection from '@/components/BranchLocatorSection';
 
 export default function ContactPageView() {
   const { t } = useLanguage();
@@ -20,6 +21,7 @@ export default function ContactPageView() {
       />
 
       <ContactSection showForm />
+      <BranchLocatorSection />
     </>
   );
 }

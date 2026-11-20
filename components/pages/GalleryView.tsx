@@ -7,6 +7,7 @@ import { useLanguage } from '@/components/LanguageProvider';
 import PageHeader from '@/components/PageHeader';
 import AppointmentButton from '@/components/AppointmentButton';
 import SocialMediaGallerySection from '@/components/SocialMediaGallerySection';
+import BeforeAfterShowcase from '@/components/BeforeAfterShowcase';
 
 const GALLERY_IMAGE_MAP: Record<(typeof GALLERY_ITEMS)[number]['imageKey'], typeof smileImg | string> = {
   smile: smileImg,
@@ -71,6 +72,8 @@ export default function GalleryView() {
           </div>
         </div>
       </section>
+
+      <BeforeAfterShowcase />
 
       <SocialMediaGallerySection />
 

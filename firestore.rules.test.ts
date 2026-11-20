@@ -22,6 +22,9 @@ test('every collection in firebase-blueprint.json has an explicit match block in
     '/admins/{adminUid}',
     '/booking_slots/{slotId}',
     '/bookings/{bookingId}',
+    '/inquiries/{inquiryId}',
+    '/offers/{offerId}',
+    '/reviews/{reviewId}',
   ]);
 
   for (const colPath of collections) {
@@ -32,7 +35,7 @@ test('every collection in firebase-blueprint.json has an explicit match block in
   }
 });
 
-test('Dirty Dozen 1-3: bookings PII is strictly isolated to verified/password admins (blocks unauth, non-admin, and unverified email spoofing)', () => {
+test('Dirty Dozen 1-3: bookings & inquiries PII are strictly isolated to verified/password admins', () => {
   assert.match(
     rulesText,
     /function isVerifiedUser\(\)\s*\{\s*return isSignedIn\(\) && request\.auth\.token\.email_verified == true;\s*\}/
@@ -45,16 +48,38 @@ test('Dirty Dozen 1-3: bookings PII is strictly isolated to verified/password ad
     rulesText,
     /function isPasswordClinicAdmin\(\)\s*\{\s*return isSignedIn\(\)\s*&& request\.auth\.token\.firebase\.sign_in_provider == 'password'\s*&& request\.auth\.token\.email == 'admin@novadental\.eg';\s*\}/
   );
-  assert.match(rulesText, /match \/bookings\/\{bookingId\}[\s\S]*?allow get: if isValidId\(bookingId\) && isAdmin\(\);/);
-  assert.match(rulesText, /match \/bookings\/\{bookingId\}[\s\S]*?allow list: if isAdmin\(\);/);
+  assert.match(
+    rulesText,
+    /match \/bookings\/\{bookingId\}[\s\S]*?allow get: if isValidId\(bookingId\) && isAdmin\(\);/
+  );
+  assert.match(
+    rulesText,
+    /match \/bookings\/\{bookingId\}[\s\S]*?allow list: if isAdmin\(\);/
+  );
+  assert.match(
+    rulesText,
+    /match \/inquiries\/\{inquiryId\}[\s\S]*?allow get: if isValidId\(inquiryId\) && isAdmin\(\);/
+  );
+  assert.match(
+    rulesText,
+    /match \/inquiries\/\{inquiryId\}[\s\S]*?allow list: if isAdmin\(\);/
+  );
 });
 
-test('Dirty Dozen 4-5: public booking create enforces strict keys (no shadow fields/adminNotes), pending status, and website source', () => {
+test('Dirty Dozen 4-5: public creates enforce strict keys, pending/new status, and no admin fields', () => {
   assert.match(rulesText, /data\.keys\(\)\.hasAll\(/);
   assert.match(rulesText, /data\.keys\(\)\.hasOnly\(/);
   assert.match(
     rulesText,
     /incoming\(\)\.status == 'pending'\s*&& incoming\(\)\.source == 'website'\s*&& !\('adminNotes' in incoming\(\)\)/
+  );
+  assert.match(
+    rulesText,
+    /match \/inquiries\/\{inquiryId\}[\s\S]*?incoming\(\)\.status == 'new'\s*&& !\('adminNotes' in incoming\(\)\)/
+  );
+  assert.match(
+    rulesText,
+    /match \/reviews\/\{reviewId\}[\s\S]*?\(incoming\(\)\.status == 'pending' && incoming\(\)\.featured == false\)/
   );
 });
 
@@ -73,22 +98,48 @@ test('Dirty Dozen 6-7: booking create and booking_slots enforce atomic existsAft
   );
 });
 
-test('Dirty Dozen 8-9: path ID hardening and blueprint-synchronized size/regex guards prevent ID & value poisoning', () => {
+test('Dirty Dozen 8-9: path ID hardening and blueprint-synchronized size/regex/rating guards prevent poisoning', () => {
   assert.match(rulesText, /isValidId\(bookingId\)/);
+  assert.match(rulesText, /isValidId\(inquiryId\)/);
+  assert.match(rulesText, /isValidId\(reviewId\)/);
   assert.match(rulesText, /isValidSlotId\(slotId\)/);
-  assert.match(rulesText, /data\.patientName\.size\(\) >= 3[\s\S]*?data\.patientName\.size\(\) <= 120/);
-  assert.match(rulesText, /data\.patientPhone\.matches\('\^01\[0125\]\[0-9\]\{8\}\$'\)/);
-  assert.match(rulesText, /data\.notes\.size\(\) <= 500/);
-  assert.match(rulesText, /data\.adminNotes\.size\(\) <= 500/);
+  assert.match(
+    rulesText,
+    /data\.patientName\.size\(\) >= 3[\s\S]*?data\.patientName\.size\(\) <= 120/
+  );
+  assert.match(
+    rulesText,
+    /data\.patientPhone\.matches\('\^01\[0125\]\[0-9\]\{8\}\$'\)/
+  );
+  assert.match(rulesText, /data\.message\.size\(\) <= 1000/);
+  assert.match(
+    rulesText,
+    /data\.rating is int\s*&& data\.rating >= 1\s*&& data\.rating <= 5/
+  );
 });
 
-test('Dirty Dozen 10-12: server timestamps, immutable createdAt, action-based updates, and admin RBAC self-escalation block', () => {
+test('Dirty Dozen 10-12: server timestamps, immutable createdAt, action-based updates, RBAC and moderated reviews list gate', () => {
   assert.match(rulesText, /incoming\(\)\.createdAt == request\.time/);
   assert.match(rulesText, /incoming\(\)\.updatedAt == request\.time/);
   assert.match(rulesText, /incoming\(\)\.createdAt == existing\(\)\.createdAt/);
-  assert.match(rulesText, /incoming\(\)\.diff\(existing\(\)\)\.affectedKeys\(\)\.hasOnly\(/);
+  assert.match(
+    rulesText,
+    /incoming\(\)\.diff\(existing\(\)\)\.affectedKeys\(\)\.hasOnly\(/
+  );
   assert.match(
     rulesText,
     /match \/admins\/\{adminUid\}[\s\S]*?allow create: if isValidId\(adminUid\)\s*&& isValidAdminData\(incoming\(\)\)\s*&& isAdmin\(\)/
+  );
+  assert.match(
+    rulesText,
+    /match \/reviews\/\{reviewId\}[\s\S]*?allow list: if isAdmin\(\) \|\| resource\.data\.status == 'approved';/
+  );
+  assert.match(
+    rulesText,
+    /match \/offers\/\{offerId\}[\s\S]*?allow list: if isAdmin\(\) \|\| resource\.data\.active == true;/
+  );
+  assert.match(
+    rulesText,
+    /match \/offers\/\{offerId\}[\s\S]*?allow create: if isValidId\(offerId\)\s*&& isValidOfferData\(incoming\(\)\)\s*&& isAdmin\(\)/
   );
 });

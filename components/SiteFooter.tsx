@@ -6,6 +6,7 @@ import { Instagram, Mail, MapPin, Phone } from 'lucide-react';
 import { CLINIC_INFO } from '@/lib/clinic-config';
 import { useLanguage } from './LanguageProvider';
 import LanguageSwitcher from './LanguageSwitcher';
+import PWAInstallButton from './PWAInstallButton';
 
 export default function SiteFooter() {
   const { locale, t } = useLanguage();
@@ -87,6 +88,11 @@ export default function SiteFooter() {
               <li>
                 <Link href="/doctors" className="transition-colors hover:text-[#E6C76A]">
                   {t.nav.doctors}
+                </Link>
+              </li>
+              <li>
+                <Link href="/offers" className="transition-colors hover:text-[#E6C76A]">
+                  {locale === 'en' ? 'Offers & Packages' : 'العروض والباقات'}
                 </Link>
               </li>
               <li>
@@ -181,7 +187,10 @@ export default function SiteFooter() {
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-[#D4AF37]/20 py-7 text-center text-sm text-[#9E9580] sm:flex-row">
           <p>{t.footer.copyright}</p>
-          <LanguageSwitcher variant="footer" />
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <PWAInstallButton variant="footer" />
+            <LanguageSwitcher variant="footer" />
+          </div>
         </div>
       </div>
     </footer>

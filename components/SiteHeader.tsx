@@ -10,6 +10,7 @@ import { CLINIC_INFO } from '@/lib/clinic-config';
 import { useLanguage } from './LanguageProvider';
 import LanguageSwitcher from './LanguageSwitcher';
 import AppointmentButton from './AppointmentButton';
+import PWAInstallButton from './PWAInstallButton';
 
 export default function SiteHeader() {
   const pathname = usePathname();
@@ -51,6 +52,7 @@ export default function SiteHeader() {
     locale === 'en' ? CLINIC_INFO.brandNameEn : CLINIC_INFO.brandNameAr;
 
   const pageSubLinks = [
+    { href: '/offers', label: locale === 'en' ? 'Offers & Packages' : 'العروض والباقات' },
     { href: '/doctors', label: t.nav.doctors },
     { href: '/gallery', label: t.nav.gallery },
     { href: '/technology', label: t.nav.technology },
@@ -412,7 +414,8 @@ export default function SiteHeader() {
                   </li>
                 </ul>
 
-                <div className="mt-2 border-t border-[#D4AF37]/15 pt-3">
+                <div className="mt-2 space-y-2.5 border-t border-[#D4AF37]/15 pt-3">
+                  <PWAInstallButton variant="mobile" />
                   <AppointmentButton
                     highlighted
                     className="w-full justify-between"

@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import {
   AlertCircle,
+  BarChart3,
   Calendar,
   CalendarCheck,
   CalendarDays,
@@ -15,6 +16,7 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
+  Inbox,
   KeyRound,
   LayoutGrid,
   List,
@@ -28,6 +30,8 @@ import {
   ShieldAlert,
   ShieldCheck,
   SlidersHorizontal,
+  Star,
+  Tag,
   User as UserIcon,
   Users,
   XCircle,
@@ -54,6 +58,16 @@ import {
   subscribeAllAdminBookings,
   updateAdminBookingStatus,
 } from '@/lib/firestore-bookings';
+import {
+  InquiryRecord,
+  PatientReviewRecord,
+} from '@/lib/clinic-engagement';
+import {
+  subscribeAllAdminInquiries,
+  subscribeAllAdminReviews,
+} from '@/lib/firestore-engagement';
+import { ClinicOfferRecord } from '@/lib/clinic-offers';
+import { subscribeAllAdminOffers } from '@/lib/firestore-offers';
 import { formatAdminDisplayIdentifier } from '@/lib/admin-auth';
 import { FIREBASE_AUTH_PROVIDERS_URL } from '@/lib/firebase';
 import { useLanguage } from '@/components/LanguageProvider';
@@ -62,6 +76,10 @@ import FirebaseErrorBoundary from '@/components/FirebaseErrorBoundary';
 import WalkInBookingModal from './WalkInBookingModal';
 import BookingDetailDrawer from './BookingDetailDrawer';
 import ChangePasswordModal from './ChangePasswordModal';
+import AdminInquiriesPanel from './AdminInquiriesPanel';
+import AdminReviewsPanel from './AdminReviewsPanel';
+import AdminOffersPanel from './AdminOffersPanel';
+import AdminAnalyticsPanel from './AdminAnalyticsPanel';
 
 const STATUS_STYLES: Record<
   BookingStatus,
@@ -116,8 +134,17 @@ function AdminDashboardContent() {
 
   const todayIso = useMemo(() => getTodayIsoDate(), []);
 
+  const [activeTab, setActiveTab] = useState<
+    'bookings' | 'inquiries' | 'reviews' | 'offers' | 'analytics'
+  >('bookings');
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
+  const [inquiries, setInquiries] = useState<InquiryRecord[]>([]);
+  const [reviews, setReviews] = useState<PatientReviewRecord[]>([]);
+  const [offers, setOffers] = useState<ClinicOfferRecord[]>([]);
   const [loadedAdminUid, setLoadedAdminUid] = useState<string | null>(null);
+  const [loadedInquiriesUid, setLoadedInquiriesUid] = useState<string | null>(null);
+  const [loadedReviewsUid, setLoadedReviewsUid] = useState<string | null>(null);
+  const [loadedOffersUid, setLoadedOffersUid] = useState<string | null>(null);
   const [dbError, setDbError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [busyBookingId, setBusyBookingId] = useState<string | null>(null);
@@ -152,11 +179,48 @@ function AdminDashboardContent() {
     [authReady, user, isAdmin, bookings]
   );
 
+  const activeInquiries = useMemo(
+    () => (authReady && user && isAdmin ? inquiries : []),
+    [authReady, user, isAdmin, inquiries]
+  );
+
+  const activeReviews = useMemo(
+    () => (authReady && user && isAdmin ? reviews : []),
+    [authReady, user, isAdmin, reviews]
+  );
+
+  const activeOffers = useMemo(
+    () => (authReady && user && isAdmin ? offers : []),
+    [authReady, user, isAdmin, offers]
+  );
+
   const loadingBookings = Boolean(
     authReady && user && isAdmin && loadedAdminUid !== user.uid
   );
 
-  // Subscribe to live Firestore bookings ONLY once auth is ready & admin verified
+  const loadingInquiries = Boolean(
+    authReady && user && isAdmin && loadedInquiriesUid !== user.uid
+  );
+
+  const loadingReviews = Boolean(
+    authReady && user && isAdmin && loadedReviewsUid !== user.uid
+  );
+
+  const loadingOffers = Boolean(
+    authReady && user && isAdmin && loadedOffersUid !== user.uid
+  );
+
+  const unreadInquiriesCount = useMemo(
+    () => activeInquiries.filter((i) => i.status === 'new').length,
+    [activeInquiries]
+  );
+
+  const pendingReviewsCount = useMemo(
+    () => activeReviews.filter((r) => r.status === 'pending').length,
+    [activeReviews]
+  );
+
+  // Subscribe to live Firestore collections ONLY once auth is ready & admin verified
   useEffect(() => {
     if (!authReady || !user || !isAdmin) {
       return;
@@ -165,7 +229,7 @@ function AdminDashboardContent() {
     let active = true;
     const currentUid = user.uid;
 
-    const unsubscribe = subscribeAllAdminBookings(
+    const unsubscribeBookings = subscribeAllAdminBookings(
       (items) => {
         if (!active) return;
         setBookings(items);
@@ -179,9 +243,51 @@ function AdminDashboardContent() {
       }
     );
 
+    const unsubscribeInquiries = subscribeAllAdminInquiries(
+      (items) => {
+        if (!active) return;
+        setInquiries(items);
+        setLoadedInquiriesUid(currentUid);
+      },
+      (err) => {
+        if (!active) return;
+        setDbError(err.message);
+        setLoadedInquiriesUid(currentUid);
+      }
+    );
+
+    const unsubscribeReviews = subscribeAllAdminReviews(
+      (items) => {
+        if (!active) return;
+        setReviews(items);
+        setLoadedReviewsUid(currentUid);
+      },
+      (err) => {
+        if (!active) return;
+        setDbError(err.message);
+        setLoadedReviewsUid(currentUid);
+      }
+    );
+
+    const unsubscribeOffers = subscribeAllAdminOffers(
+      (items) => {
+        if (!active) return;
+        setOffers(items);
+        setLoadedOffersUid(currentUid);
+      },
+      (err) => {
+        if (!active) return;
+        setDbError(err.message);
+        setLoadedOffersUid(currentUid);
+      }
+    );
+
     return () => {
       active = false;
-      unsubscribe();
+      unsubscribeBookings();
+      unsubscribeInquiries();
+      unsubscribeReviews();
+      unsubscribeOffers();
     };
   }, [authReady, user, isAdmin]);
 
@@ -571,8 +677,8 @@ function AdminDashboardContent() {
 
             <h1 className="text-2xl font-bold text-[#F7F3E9] sm:text-3xl">
               {locale === 'en'
-                ? 'Clinic Bookings Control Center'
-                : 'لوحة إدارة حجوزات عيادة نوفا'}
+                ? 'NOVA Clinic Control Center'
+                : 'لوحة إدارة عيادة نوفا'}
             </h1>
             <p className="text-xs text-[#9E9580] sm:text-sm">
               <span dir="ltr" className="font-semibold text-[#E6C76A]">
@@ -595,15 +701,17 @@ function AdminDashboardContent() {
               <span>{locale === 'en' ? 'New Booking' : 'إضافة حجز جديد'}</span>
             </button>
 
-            <button
-              type="button"
-              onClick={handleExportCsv}
-              disabled={filteredBookings.length === 0}
-              className="inline-flex min-h-[42px] items-center gap-2 rounded-full border border-[#D4AF37]/30 bg-[#161512] px-4 py-2 text-sm font-semibold text-[#F7F3E9] transition-colors hover:border-[#E6C76A] hover:text-[#E6C76A] disabled:opacity-50 cursor-pointer"
-            >
-              <Download className="h-4 w-4 text-[#D4AF37]" aria-hidden="true" />
-              <span>{locale === 'en' ? 'Export CSV' : 'تصدير CSV'}</span>
-            </button>
+            {activeTab === 'bookings' && (
+              <button
+                type="button"
+                onClick={handleExportCsv}
+                disabled={filteredBookings.length === 0}
+                className="inline-flex min-h-[42px] items-center gap-2 rounded-full border border-[#D4AF37]/30 bg-[#161512] px-4 py-2 text-sm font-semibold text-[#F7F3E9] transition-colors hover:border-[#E6C76A] hover:text-[#E6C76A] disabled:opacity-50 cursor-pointer"
+              >
+                <Download className="h-4 w-4 text-[#D4AF37]" aria-hidden="true" />
+                <span>{locale === 'en' ? 'Export CSV' : 'تصدير CSV'}</span>
+              </button>
+            )}
 
             <button
               type="button"
@@ -627,6 +735,123 @@ function AdminDashboardContent() {
           </div>
         </div>
 
+        {/* Unified Section Navigation Tabs */}
+        <div
+          role="tablist"
+          aria-label={
+            locale === 'en' ? 'Clinic management sections' : 'أقسام إدارة العيادة'
+          }
+          className="flex flex-wrap items-center gap-2 rounded-[22px] border border-[#D4AF37]/20 bg-[#12110E] p-2"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'bookings'}
+            onClick={() => setActiveTab('bookings')}
+            className={`inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-bold transition-colors sm:flex-none sm:px-6 cursor-pointer ${
+              activeTab === 'bookings'
+                ? 'bg-[#D4AF37] text-[#080808]'
+                : 'text-[#C8BFA8] hover:bg-[#191712] hover:text-[#F7F3E9]'
+            }`}
+          >
+            <CalendarDays className="h-4 w-4" aria-hidden="true" />
+            <span>{locale === 'en' ? 'Appointments' : 'الحجوزات'}</span>
+            {metrics.pending > 0 && (
+              <span
+                className={`rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums ${
+                  activeTab === 'bookings'
+                    ? 'bg-[#080808]/20 text-[#080808]'
+                    : 'border border-amber-500/40 bg-amber-950/70 text-amber-300'
+                }`}
+              >
+                {metrics.pending}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'inquiries'}
+            onClick={() => setActiveTab('inquiries')}
+            className={`inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-bold transition-colors sm:flex-none sm:px-6 cursor-pointer ${
+              activeTab === 'inquiries'
+                ? 'bg-[#D4AF37] text-[#080808]'
+                : 'text-[#C8BFA8] hover:bg-[#191712] hover:text-[#F7F3E9]'
+            }`}
+          >
+            <Inbox className="h-4 w-4" aria-hidden="true" />
+            <span>{locale === 'en' ? 'Contact Inquiries' : 'رسائل التواصل'}</span>
+            {unreadInquiriesCount > 0 && (
+              <span
+                className={`rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums ${
+                  activeTab === 'inquiries'
+                    ? 'bg-[#080808]/20 text-[#080808]'
+                    : 'border border-amber-500/40 bg-amber-950/70 text-amber-300'
+                }`}
+              >
+                {unreadInquiriesCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'reviews'}
+            onClick={() => setActiveTab('reviews')}
+            className={`inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-bold transition-colors sm:flex-none sm:px-5 cursor-pointer ${
+              activeTab === 'reviews'
+                ? 'bg-[#D4AF37] text-[#080808]'
+                : 'text-[#C8BFA8] hover:bg-[#191712] hover:text-[#F7F3E9]'
+            }`}
+          >
+            <Star className="h-4 w-4" aria-hidden="true" />
+            <span>{locale === 'en' ? 'Reviews' : 'تقييمات المرضى'}</span>
+            {pendingReviewsCount > 0 && (
+              <span
+                className={`rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums ${
+                  activeTab === 'reviews'
+                    ? 'bg-[#080808]/20 text-[#080808]'
+                    : 'border border-amber-500/40 bg-amber-950/70 text-amber-300'
+                }`}
+              >
+                {pendingReviewsCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'offers'}
+            onClick={() => setActiveTab('offers')}
+            className={`inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-bold transition-colors sm:flex-none sm:px-5 cursor-pointer ${
+              activeTab === 'offers'
+                ? 'bg-[#D4AF37] text-[#080808]'
+                : 'text-[#C8BFA8] hover:bg-[#191712] hover:text-[#F7F3E9]'
+            }`}
+          >
+            <Tag className="h-4 w-4" aria-hidden="true" />
+            <span>{locale === 'en' ? 'Offers' : 'العروض والباقات'}</span>
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'analytics'}
+            onClick={() => setActiveTab('analytics')}
+            className={`inline-flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-2xl px-4 py-2.5 text-sm font-bold transition-colors sm:flex-none sm:px-5 cursor-pointer ${
+              activeTab === 'analytics'
+                ? 'bg-[#D4AF37] text-[#080808]'
+                : 'text-[#C8BFA8] hover:bg-[#191712] hover:text-[#F7F3E9]'
+            }`}
+          >
+            <BarChart3 className="h-4 w-4" aria-hidden="true" />
+            <span>{locale === 'en' ? 'Analytics' : 'التحليلات والتقارير'}</span>
+          </button>
+        </div>
+
         {/* Toast & Error Alerts */}
         {toast && (
           <div
@@ -648,6 +873,48 @@ function AdminDashboardContent() {
           </div>
         )}
 
+        {activeTab === 'inquiries' && (
+          <AdminInquiriesPanel
+            inquiries={activeInquiries}
+            loading={loadingInquiries}
+            locale={locale}
+            onNotify={(msg) => setToast(msg)}
+            onError={(msg) => setDbError(msg)}
+          />
+        )}
+
+        {activeTab === 'reviews' && (
+          <AdminReviewsPanel
+            reviews={activeReviews}
+            loading={loadingReviews}
+            locale={locale}
+            onNotify={(msg) => setToast(msg)}
+            onError={(msg) => setDbError(msg)}
+          />
+        )}
+
+        {activeTab === 'offers' && (
+          <AdminOffersPanel
+            offers={activeOffers}
+            loading={loadingOffers}
+            locale={locale}
+            onNotify={(msg) => setToast(msg)}
+            onError={(msg) => setDbError(msg)}
+          />
+        )}
+
+        {activeTab === 'analytics' && (
+          <AdminAnalyticsPanel
+            bookings={activeBookings}
+            inquiries={activeInquiries}
+            reviews={activeReviews}
+            todayIso={todayIso}
+            locale={locale}
+          />
+        )}
+
+        {activeTab === 'bookings' && (
+          <>
         {/* KPI Metrics Grid */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <button
@@ -1364,6 +1631,8 @@ function AdminDashboardContent() {
               })}
             </div>
           </div>
+        )}
+          </>
         )}
       </div>
 

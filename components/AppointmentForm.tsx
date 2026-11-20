@@ -5,8 +5,12 @@ import { useSearchParams } from 'next/navigation';
 import {
   Calendar,
   CalendarCheck,
+  CalendarPlus,
+  Check,
   CheckCircle2,
   Clock,
+  Copy,
+  ExternalLink,
   ListChecks,
   MapPin,
   MessageCircle,
@@ -28,6 +32,10 @@ import {
   getAvailableSlotsFromBookedTimes,
   getUpcomingWorkingDays,
 } from '@/lib/booking-logic';
+import {
+  buildAppointmentIcsContent,
+  buildGoogleCalendarUrl,
+} from '@/lib/clinic-offers';
 import {
   BookingValidationError,
   createFirestoreBooking,
@@ -94,6 +102,30 @@ function AppointmentFormContent() {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [myBookings, setMyBookings] = useState<BookingRecord[]>([]);
+  const [copiedRef, setCopiedRef] = useState(false);
+
+  const handleDownloadIcs = (booking: BookingRecord) => {
+    const ics = buildAppointmentIcsContent(booking, locale);
+    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `nova-dental-${booking.referenceCode}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleCopyReference = async (code: string) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopiedRef(true);
+      window.setTimeout(() => setCopiedRef(false), 2200);
+    } catch {
+      // Clipboard unavailable in restricted iframe
+    }
+  };
 
   // Hydrate patient's local booking receipt history asynchronously
   useEffect(() => {
@@ -305,12 +337,33 @@ function AppointmentFormContent() {
                 <span className="font-medium text-[#C8BFA8]">
                   {t.appointmentPage.refLabel}
                 </span>
-                <span
-                  dir="ltr"
-                  className="font-bold text-[#E6C76A] tabular-nums"
-                >
-                  {confirmedBooking.referenceCode}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    dir="ltr"
+                    className="font-bold text-[#E6C76A] tabular-nums"
+                  >
+                    {confirmedBooking.referenceCode}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleCopyReference(confirmedBooking.referenceCode)
+                    }
+                    className="inline-flex items-center gap-1 rounded-full border border-[#D4AF37]/30 bg-[#161512] px-2.5 py-0.5 text-[11px] font-bold text-[#E6C76A] transition-colors hover:bg-[#D4AF37] hover:text-[#080808] cursor-pointer"
+                  >
+                    {copiedRef ? (
+                      <>
+                        <Check className="h-3 w-3" aria-hidden="true" />
+                        <span>{locale === 'en' ? 'Copied' : 'تم النسخ'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3 w-3" aria-hidden="true" />
+                        <span>{locale === 'en' ? 'Copy' : 'نسخ'}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="font-medium text-[#C8BFA8]">
@@ -341,7 +394,37 @@ function AppointmentFormContent() {
               </div>
             </div>
 
-            <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+            {/* Calendar Reminder Actions (.ics & Google Calendar) */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+              <button
+                type="button"
+                onClick={() => handleDownloadIcs(confirmedBooking)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/35 bg-[#0A0908] px-4 py-2 text-xs font-bold text-[#E6C76A] transition-colors hover:border-[#E6C76A] hover:bg-[#1B1810] cursor-pointer"
+              >
+                <CalendarPlus className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>
+                  {locale === 'en'
+                    ? 'Save to Calendar (.ics)'
+                    : 'حفظ في التقويم (.ics)'}
+                </span>
+              </button>
+
+              <a
+                href={buildGoogleCalendarUrl(confirmedBooking, locale)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/30 bg-[#0A0908] px-4 py-2 text-xs font-bold text-[#F7F3E9] transition-colors hover:border-[#E6C76A] hover:text-[#E6C76A]"
+              >
+                <ExternalLink className="h-3.5 w-3.5 text-[#D4AF37]" aria-hidden="true" />
+                <span>
+                  {locale === 'en'
+                    ? 'Add to Google Calendar'
+                    : 'إضافة إلى تقويم Google'}
+                </span>
+              </a>
+            </div>
+
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <a
                 href={buildBookingWhatsAppUrl(confirmedBooking, 'confirm')}
                 target="_blank"

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { CLINIC_INFO } from '@/lib/clinic-config';
 import { DENTAL_SERVICES } from '@/lib/clinic-data';
 import { getServerLocale } from '@/lib/locale-server';
+import { buildPageMetadata } from '@/lib/seo';
 import ServiceDetailView from '@/components/pages/ServiceDetailView';
 
 export function generateStaticParams() {
@@ -19,11 +20,12 @@ export async function generateMetadata({
   if (!service) return {};
 
   const locale = await getServerLocale();
-  return {
+  return buildPageMetadata({
+    locale,
     title: locale === 'en' ? service.titleEn : service.titleAr,
     description: locale === 'en' ? service.summaryEn : service.summaryAr,
-    alternates: { canonical: `/services/${service.slug}` },
-  };
+    path: `/services/${service.slug}`,
+  });
 }
 
 export default async function ServiceDetailPage({

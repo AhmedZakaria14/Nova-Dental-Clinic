@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { CLINIC_INFO } from '@/lib/clinic-config';
 import { BLOG_ARTICLES } from '@/lib/clinic-data';
 import { getServerLocale } from '@/lib/locale-server';
+import { buildPageMetadata } from '@/lib/seo';
 import BlogDetailView from '@/components/pages/BlogDetailView';
 
 export function generateStaticParams() {
@@ -19,11 +20,13 @@ export async function generateMetadata({
   if (!article) return {};
 
   const locale = await getServerLocale();
-  return {
+  return buildPageMetadata({
+    locale,
     title: locale === 'en' ? article.titleEn : article.titleAr,
     description: locale === 'en' ? article.excerptEn : article.excerptAr,
-    alternates: { canonical: `/blog/${article.slug}` },
-  };
+    path: `/blog/${article.slug}`,
+    type: 'article',
+  });
 }
 
 export default async function BlogDetailPage({

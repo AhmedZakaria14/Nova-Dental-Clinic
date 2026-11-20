@@ -1,8 +1,9 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
 import { IBM_Plex_Sans_Arabic } from 'next/font/google';
 import './globals.css';
 import { CLINIC_INFO } from '@/lib/clinic-config';
+import { DENTAL_SERVICES } from '@/lib/clinic-data';
 import { DICTIONARIES, Locale } from '@/lib/i18n';
 import { LanguageProvider } from '@/components/LanguageProvider';
 import { FirebaseProvider } from '@/components/FirebaseProvider';
@@ -10,6 +11,13 @@ import SiteHeader from '@/components/SiteHeader';
 import SiteFooter from '@/components/SiteFooter';
 import SmoothScrollProvider from '@/components/SmoothScrollProvider';
 import FloatingWhatsAppButton from '@/components/FloatingWhatsAppButton';
+import OfflineIndicator from '@/components/OfflineIndicator';
+
+export const viewport: Viewport = {
+  themeColor: '#080808',
+  width: 'device-width',
+  initialScale: 1,
+};
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ['arabic', 'latin'],
@@ -33,12 +41,17 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${t.meta.siteName}`,
     },
     description: t.meta.homeDescription,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'black-translucent',
+      title: 'NOVA Dental',
+    },
     icons: {
       icon: [
         { url: '/favicon.ico', sizes: 'any' },
         { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
         { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-        { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+        { url: '/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
       ],
       shortcut: ['/favicon.ico'],
       apple: [
@@ -56,14 +69,27 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: t.meta.homeTitle,
       description: t.meta.homeDescription,
+      url: '/',
       type: 'website',
       locale: locale === 'en' ? 'en_US' : 'ar_EG',
       siteName: t.meta.siteName,
+      images: [
+        {
+          url: '/opengraph-image',
+          width: 1200,
+          height: 630,
+          alt:
+            locale === 'en'
+              ? `${CLINIC_INFO.brandNameEn} — Cosmetic Dentistry, Implants & Smile Design`
+              : `${CLINIC_INFO.brandNameAr} — تجميل وزراعة الأسنان وتصميم الابتسامة`,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: t.meta.homeTitle,
       description: t.meta.homeDescription,
+      images: ['/twitter-image'],
     },
   };
 }
@@ -86,10 +112,28 @@ export default async function RootLayout({
     description:
       initialLocale === 'en' ? CLINIC_INFO.sloganEn : CLINIC_INFO.sloganAr,
     url: baseUrl,
+    image: `${baseUrl}/opengraph-image`,
+    logo: `${baseUrl}${CLINIC_INFO.logoPath}`,
+    priceRange: '$$',
     telephone: CLINIC_INFO.primaryPhoneInternational,
     email: CLINIC_INFO.email,
     sameAs: [CLINIC_INFO.instagramUrl],
     areaServed: ['Fifth Settlement, New Cairo', 'Nasr City, Cairo'],
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: [
+          'Saturday',
+          'Sunday',
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+        ],
+        opens: '12:00',
+        closes: '21:00',
+      },
+    ],
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Ozone Medical Center, Fifth Settlement',
@@ -97,10 +141,27 @@ export default async function RootLayout({
       addressRegion: 'Cairo',
       addressCountry: 'EG',
     },
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name:
+        initialLocale === 'en'
+          ? 'NOVA Dental Clinic Services'
+          : 'خدمات عيادة نوفا لطب الأسنان',
+      itemListElement: DENTAL_SERVICES.map((srv) => ({
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'MedicalProcedure',
+          name: initialLocale === 'en' ? srv.titleEn : srv.titleAr,
+          description: initialLocale === 'en' ? srv.summaryEn : srv.summaryAr,
+          url: `${baseUrl}/services/${srv.slug}`,
+        },
+      })),
+    },
     department: [
       {
         '@type': 'Dentist',
         name: 'NOVA Dental Clinic — Fifth Settlement',
+        telephone: CLINIC_INFO.primaryPhoneInternational,
         address: {
           '@type': 'PostalAddress',
           streetAddress: 'Ozone Medical Center, Fifth Settlement',
@@ -113,6 +174,7 @@ export default async function RootLayout({
       {
         '@type': 'Dentist',
         name: 'NOVA Dental Clinic — Nasr City',
+        telephone: CLINIC_INFO.primaryPhoneInternational,
         address: {
           '@type': 'PostalAddress',
           addressLocality: 'Nasr City',
@@ -148,6 +210,7 @@ export default async function RootLayout({
                 <SiteFooter />
               </div>
               <FloatingWhatsAppButton />
+              <OfflineIndicator />
             </SmoothScrollProvider>
           </FirebaseProvider>
         </LanguageProvider>

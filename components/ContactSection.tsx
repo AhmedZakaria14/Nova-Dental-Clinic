@@ -8,11 +8,17 @@ import {
   Instagram,
   Mail,
   MapPin,
+  MessageCircle,
   Phone,
   Send,
 } from 'lucide-react';
 import suiteImg from '@/src/assets/images/dental_treatment_suite_1794988565232.jpg';
 import { CLINIC_INFO } from '@/lib/clinic-config';
+import { InquiryBranchId } from '@/lib/clinic-engagement';
+import {
+  createFirestoreInquiry,
+  EngagementValidationError,
+} from '@/lib/firestore-engagement';
 import { useLanguage } from '@/components/LanguageProvider';
 import AppointmentButton from '@/components/AppointmentButton';
 import {
@@ -35,13 +41,14 @@ export default function ContactSection({
   const shortBranches =
     locale === 'en' ? CLINIC_INFO.shortBranchesEn : CLINIC_INFO.shortBranchesAr;
 
+  const [branchId, setBranchId] = useState<InquiryBranchId>('fifth-settlement');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
-  const [submittedId, setSubmittedId] = useState<string | null>(null);
+  const [submittedRef, setSubmittedRef] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,28 +56,30 @@ export default function ContactSection({
     setErrors({});
 
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ locale, name, phone, subject, message }),
+      const saved = await createFirestoreInquiry({
+        locale,
+        branchId,
+        name,
+        phone,
+        subject,
+        message,
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setErrors(data.errors || { form: data.error || 'Error' });
-        return;
-      }
-      setSubmittedId(data.inquiry?.id || 'INQ-OK');
+      setSubmittedRef(saved.referenceCode);
       setName('');
       setPhone('');
       setSubject('');
       setMessage('');
-    } catch {
-      setErrors({
-        form:
-          locale === 'en'
-            ? 'Network error. Please call 01031235562.'
-            : 'تعذر الاتصال، يرجى المحاولة أو الاتصال على 01031235562.',
-      });
+    } catch (err) {
+      if (err instanceof EngagementValidationError) {
+        setErrors(err.errors);
+      } else {
+        setErrors({
+          form:
+            locale === 'en'
+              ? 'Unable to save your message right now. Please call 01031235562.'
+              : 'تعذر حفظ الرسالة حالياً، يرجى المحاولة أو الاتصال على 01031235562.',
+        });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -84,7 +93,7 @@ export default function ContactSection({
           <div className="lg:col-span-6">
             {showForm ? (
               <div className="rounded-[30px] border border-[#D4AF37]/25 bg-[#161512] p-7 sm:p-10 shadow-2xl">
-                {submittedId ? (
+                {submittedRef ? (
                   <div className="py-8 text-center">
                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-emerald-500/35 bg-emerald-950/60 text-emerald-300">
                       <CheckCircle2 className="h-8 w-8" />
@@ -99,12 +108,29 @@ export default function ContactSection({
                       dir="ltr"
                       className="mt-4 inline-block rounded-full border border-[#D4AF37]/35 bg-[#0A0908] px-4 py-1.5 text-xs font-bold text-[#E6C76A] tabular-nums"
                     >
-                      {submittedId}
+                      {submittedRef}
                     </p>
-                    <div className="mt-7">
+                    <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+                      <a
+                        href={`https://wa.me/${CLINIC_INFO.whatsappNumber}?text=${encodeURIComponent(
+                          locale === 'en'
+                            ? `Hello NOVA Dental Clinic, I just sent inquiry ${submittedRef}.`
+                            : `مرحباً عيادة نوفا، قمت للتو بإرسال استفسار برقم مرجع ${submittedRef}.`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full border border-[#25D366]/40 bg-[#25D366]/15 px-5 py-3 text-sm font-bold text-[#25D366] transition-colors hover:bg-[#25D366]/25"
+                      >
+                        <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                        <span>
+                          {locale === 'en'
+                            ? 'Follow up on WhatsApp'
+                            : 'متابعة عبر واتساب'}
+                        </span>
+                      </a>
                       <button
                         type="button"
-                        onClick={() => setSubmittedId(null)}
+                        onClick={() => setSubmittedRef(null)}
                         className="rounded-full bg-[#D4AF37] px-6 py-3 text-sm font-bold text-[#080808] transition-colors hover:bg-[#E6C76A] cursor-pointer"
                       >
                         {t.contactPage.sendAnother}
@@ -122,12 +148,45 @@ export default function ContactSection({
                       </p>
                     </div>
 
+                    <div>
+                      <label
+                        htmlFor="contact-branch"
+                        className="mb-1.5 block text-sm font-semibold text-[#F7F3E9]"
+                      >
+                        {locale === 'en' ? 'Target Branch' : 'الفرع المعني'}
+                      </label>
+                      <select
+                        id="contact-branch"
+                        value={branchId}
+                        onChange={(e) =>
+                          setBranchId(e.target.value as InquiryBranchId)
+                        }
+                        className="w-full rounded-[14px] border border-[#D4AF37]/25 bg-[#0A0908] px-4 py-3 text-sm text-[#F7F3E9] focus:border-[#E6C76A] focus:outline-none"
+                      >
+                        <option value="fifth-settlement" className="bg-[#161512]">
+                          {locale === 'en'
+                            ? 'Fifth Settlement (Ozone Medical Center)'
+                            : 'فرع التجمع الخامس (مركز أوزون الطبي)'}
+                        </option>
+                        <option value="nasr-city" className="bg-[#161512]">
+                          {locale === 'en' ? 'Nasr City Branch' : 'فرع مدينة نصر'}
+                        </option>
+                        <option value="general" className="bg-[#161512]">
+                          {locale === 'en' ? 'General Inquiry' : 'استفسار عام'}
+                        </option>
+                      </select>
+                    </div>
+
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
-                        <label className="mb-1.5 block text-sm font-semibold text-[#F7F3E9]">
+                        <label
+                          htmlFor="contact-name"
+                          className="mb-1.5 block text-sm font-semibold text-[#F7F3E9]"
+                        >
                           {t.appointmentPage.nameLabel}
                         </label>
                         <input
+                          id="contact-name"
                           type="text"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
@@ -142,10 +201,14 @@ export default function ContactSection({
                       </div>
 
                       <div>
-                        <label className="mb-1.5 block text-sm font-semibold text-[#F7F3E9]">
+                        <label
+                          htmlFor="contact-phone"
+                          className="mb-1.5 block text-sm font-semibold text-[#F7F3E9]"
+                        >
                           {t.appointmentPage.phoneLabel}
                         </label>
                         <input
+                          id="contact-phone"
                           type="tel"
                           dir="ltr"
                           value={phone}
