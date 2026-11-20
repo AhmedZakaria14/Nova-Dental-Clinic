@@ -2,12 +2,12 @@
 
 import { FormEvent, useState } from 'react';
 import {
+  Award,
   CheckCircle2,
   Eye,
   EyeOff,
   MapPin,
   Plus,
-  Sparkles,
   Tag,
   Trash2,
   X,
@@ -203,7 +203,7 @@ export default function AdminOffersPanel({
             <span className="text-xs font-semibold text-[#E6C76A]">
               {locale === 'en' ? 'Featured Packages' : 'العروض المميزة'}
             </span>
-            <Sparkles className="h-5 w-5 text-[#E6C76A]" aria-hidden="true" />
+            <Award className="h-5 w-5 text-[#E6C76A]" aria-hidden="true" />
           </div>
           <div className="mt-2 flex items-center justify-between gap-3">
             <p className="text-3xl font-bold text-[#E6C76A] tabular-nums">
@@ -566,7 +566,7 @@ export default function AdminOffersPanel({
 
                       {offer.featured && (
                         <span className="inline-flex items-center gap-1 rounded-full border border-[#D4AF37]/40 bg-[#1B1810] px-2.5 py-0.5 text-[11px] font-bold text-[#E6C76A]">
-                          <Sparkles className="h-3 w-3" aria-hidden="true" />
+                          <Award className="h-3 w-3" aria-hidden="true" />
                           <span>{locale === 'en' ? 'Featured' : 'مميز'}</span>
                         </span>
                       )}
@@ -621,7 +621,7 @@ export default function AdminOffersPanel({
                       onClick={() => handleToggleFeatured(offer)}
                       className="inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/30 bg-[#0A0908] px-3 py-1.5 text-xs font-bold text-[#E6C76A] hover:bg-[#D4AF37] hover:text-[#080808] disabled:opacity-50 cursor-pointer"
                     >
-                      <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                      <Award className="h-3.5 w-3.5" aria-hidden="true" />
                       <span>
                         {offer.featured
                           ? locale === 'en'

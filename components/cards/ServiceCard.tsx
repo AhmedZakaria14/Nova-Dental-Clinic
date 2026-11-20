@@ -20,7 +20,7 @@ import { SERVICE_IMAGES } from '@/components/service-images';
 import { useLanguage } from '@/components/LanguageProvider';
 
 const ICON_MAP = {
-  sparkles: Gem,
+  gem: Gem,
   shield: ShieldCheck,
   smile: Smile,
   zap: Zap,

@@ -52,7 +52,7 @@ export interface DentalService {
   highlightsEn: string[];
   durationMinutes: number;
   iconKey:
-    | 'sparkles'
+    | 'gem'
     | 'shield'
     | 'smile'
     | 'zap'
@@ -234,7 +234,7 @@ export const DENTAL_SERVICES: DentalService[] = [
       'Protects against gum inflammation and bleeding',
     ],
     durationMinutes: 40,
-    iconKey: 'sparkles',
+    iconKey: 'gem',
     imageKey: 'cleaning-polishing',
   },
   {
@@ -333,7 +333,7 @@ export const DENTAL_SERVICES: DentalService[] = [
       'Stain-resistant finish polished to natural enamel gloss',
     ],
     durationMinutes: 45,
-    iconKey: 'sparkles',
+    iconKey: 'gem',
     imageKey: 'cosmetic-fillings',
   },
   {
@@ -366,7 +366,7 @@ export const DENTAL_SERVICES: DentalService[] = [
       'High stain resistance and lifelike ceramic translucency',
     ],
     durationMinutes: 60,
-    iconKey: 'sparkles',
+    iconKey: 'gem',
     imageKey: 'dental-veneers',
   },
   {
@@ -531,7 +531,7 @@ export const DENTAL_SERVICES: DentalService[] = [
       'Conservative makeover plans prioritizing long-term tooth health',
     ],
     durationMinutes: 60,
-    iconKey: 'sparkles',
+    iconKey: 'gem',
     imageKey: 'cosmetic-dentistry',
   },
   {

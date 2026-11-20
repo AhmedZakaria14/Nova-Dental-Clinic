@@ -4,13 +4,13 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   CalendarCheck,
+  CheckCircle2,
   Clock,
   ExternalLink,
   MapPin,
   MessageCircle,
   Navigation,
   Phone,
-  Sparkles,
 } from 'lucide-react';
 import { CLINIC_INFO } from '@/lib/clinic-config';
 import { BranchId, CLINIC_BRANCHES } from '@/lib/clinic-data';
@@ -224,7 +224,7 @@ export default function BranchLocatorSection() {
                     key={point}
                     className="flex items-start gap-2.5 text-sm text-[#F7F3E9]"
                   >
-                    <Sparkles
+                    <CheckCircle2
                       className="mt-0.5 h-4 w-4 shrink-0 text-[#D4AF37]"
                       aria-hidden="true"
                     />

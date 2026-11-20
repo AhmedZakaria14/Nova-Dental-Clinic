@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import {
+  Award,
   CheckCircle2,
   Clock,
   MapPin,
-  Sparkles,
   Star,
   Trash2,
   XCircle,
@@ -238,7 +238,7 @@ export default function AdminReviewsPanel({
                       </span>
                       {review.featured && (
                         <span className="inline-flex items-center gap-1 rounded-full border border-[#D4AF37]/40 bg-[#1B1810] px-2.5 py-0.5 text-[11px] font-bold text-[#E6C76A]">
-                          <Sparkles className="h-3 w-3" aria-hidden="true" />
+                          <Award className="h-3 w-3" aria-hidden="true" />
                           <span>{locale === 'en' ? 'Featured' : 'مميز'}</span>
                         </span>
                       )}
@@ -304,7 +304,7 @@ export default function AdminReviewsPanel({
                         }
                         className="inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/35 bg-[#1B1810] px-3.5 py-1.5 text-xs font-bold text-[#E6C76A] hover:bg-[#D4AF37] hover:text-[#080808] disabled:opacity-50 cursor-pointer"
                       >
-                        <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                        <Award className="h-3.5 w-3.5" aria-hidden="true" />
                         <span>
                           {review.featured
                             ? locale === 'en'

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { MoveHorizontal, Sparkles } from 'lucide-react';
+import { MoveHorizontal } from 'lucide-react';
 import smileImg from '@/src/assets/images/male_smile_showcase_1795203941309.jpg';
 import { useLanguage } from '@/components/LanguageProvider';
 
@@ -76,14 +76,11 @@ export default function BeforeAfterShowcase() {
       <div className="mx-auto max-w-[1160px] px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-[#E6C76A] sm:text-sm">
-              <Sparkles className="h-4 w-4 text-[#D4AF37]" aria-hidden="true" />
-              <span>
-                {locale === 'en'
-                  ? 'INTERACTIVE SMILE COMPARISON'
-                  : 'مقارنة تفاعلية قبل وبعد'}
-              </span>
-            </div>
+            <p className="text-xs font-bold uppercase tracking-wider text-[#E6C76A] sm:text-sm">
+              {locale === 'en'
+                ? 'INTERACTIVE SMILE COMPARISON'
+                : 'مقارنة تفاعلية قبل وبعد'}
+            </p>
             <h2
               id="before-after-heading"
               className="mt-2 text-2xl font-bold text-[#F7F3E9] sm:text-3xl"

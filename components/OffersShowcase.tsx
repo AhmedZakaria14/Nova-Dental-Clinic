@@ -7,7 +7,6 @@ import {
   Clock,
   MapPin,
   MessageCircle,
-  Sparkles,
   Tag,
 } from 'lucide-react';
 import { CLINIC_INFO } from '@/lib/clinic-config';
@@ -79,14 +78,11 @@ function OffersShowcaseContent() {
         {/* Branch Filter Bar */}
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold text-[#E6C76A] sm:text-sm">
-              <Sparkles className="h-4 w-4 text-[#D4AF37]" aria-hidden="true" />
-              <span>
-                {locale === 'en'
-                  ? 'SEASONAL PACKAGES & CARE PLANS'
-                  : 'باقات وعروض عيادة نوفا'}
-              </span>
-            </div>
+            <p className="text-xs font-bold uppercase tracking-wider text-[#E6C76A] sm:text-sm">
+              {locale === 'en'
+                ? 'SEASONAL PACKAGES & CARE PLANS'
+                : 'باقات وعروض عيادة نوفا'}
+            </p>
             <h2 className="mt-2 text-2xl font-bold text-[#F7F3E9] sm:text-3xl">
               {locale === 'en'
                 ? 'Choose the Right Package for Your Smile'
@@ -171,7 +167,7 @@ function OffersShowcaseContent() {
                   <div>
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D4AF37]/40 bg-[#1B1810] px-3 py-1 text-xs font-bold text-[#E6C76A]">
-                        <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                        <Tag className="h-3.5 w-3.5" aria-hidden="true" />
                         <span>
                           {locale === 'en' ? offer.badgeEn : offer.badgeAr}
                         </span>
