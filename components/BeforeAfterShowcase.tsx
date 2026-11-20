@@ -3,70 +3,19 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { MoveHorizontal } from 'lucide-react';
-import smileImg from '@/src/assets/images/male_smile_showcase_1795203941309.jpg';
+import beforeCaseImg from '@/src/assets/images/real_case_before.jpg';
+import afterCaseImg from '@/src/assets/images/real_case_after.jpg';
 import { useLanguage } from '@/components/LanguageProvider';
 
-interface ComparisonCase {
-  id: string;
-  titleAr: string;
-  titleEn: string;
-  categoryAr: string;
-  categoryEn: string;
-  summaryAr: string;
-  summaryEn: string;
-  beforeLabelAr: string;
-  beforeLabelEn: string;
-  afterLabelAr: string;
-  afterLabelEn: string;
-  beforeFilterClass: string;
-  afterFilterClass: string;
-}
-
-const SMILE_PREVIEW_CASES: ComparisonCase[] = [
-  {
-    id: 'dsd-veneers',
-    titleAr: 'معاينة تدرج لون الابتسامة — الفينيرز وتصميم DSD',
-    titleEn: 'Smile Shade & Harmony Preview — Veneers & DSD',
-    categoryAr: 'تجميل الأسنان',
-    categoryEn: 'Cosmetic Dentistry',
-    summaryAr:
-      'اسحب المؤشر لمعاينة الفرق البصري بين درجة الاصفرار السطحي والتدرج اللوني الطبيعي المشرق بعد التجميل الرقمي.',
-    summaryEn:
-      'Drag the slider to preview the visual contrast between surface dullness and balanced natural translucency after Digital Smile Design.',
-    beforeLabelAr: 'قبل التجميل',
-    beforeLabelEn: 'Before',
-    afterLabelAr: 'بعد التجميل',
-    afterLabelEn: 'After',
-    beforeFilterClass: 'brightness-[0.84] saturate-[0.72] sepia-[0.28] contrast-[0.94]',
-    afterFilterClass: 'brightness-[1.06] saturate-[1.05] contrast-[1.04]',
-  },
-  {
-    id: 'laser-whitening',
-    titleAr: 'معاينة درجات التفتيح — التبييض الاحترافي بالليزر',
-    titleEn: 'Shade Elevation Preview — Laser Whitening',
-    categoryAr: 'التبييض بالليزر',
-    categoryEn: 'Laser Whitening',
-    summaryAr:
-      'اسحب المؤشر للمقارنة بين تصبغات القهوة والشاي والنتيجة المشرقة الآمنة على طبقة المينا في جلسة واحدة.',
-    summaryEn:
-      'Slide to compare everyday coffee/tea staining against safe enamel-friendly brightness achieved in a single clinical session.',
-    beforeLabelAr: 'قبل التبييض',
-    beforeLabelEn: 'Before',
-    afterLabelAr: 'بعد التبييض',
-    afterLabelEn: 'After',
-    beforeFilterClass: 'brightness-[0.88] sepia-[0.22] saturate-[0.82]',
-    afterFilterClass: 'brightness-[1.08] contrast-[1.05] saturate-[1.02]',
-  },
-];
+const PRESET_VIEWS = [
+  { id: 'before', value: 96, labelAr: 'قبل العلاج', labelEn: 'Before' },
+  { id: 'split', value: 50, labelAr: 'مقارنة 50/50', labelEn: '50/50 Split' },
+  { id: 'after', value: 4, labelAr: 'بعد العلاج', labelEn: 'After' },
+] as const;
 
 export default function BeforeAfterShowcase() {
   const { locale } = useLanguage();
-  const [activeCaseId, setActiveCaseId] = useState(SMILE_PREVIEW_CASES[0].id);
-  const [sliderValue, setSliderValue] = useState(52);
-
-  const activeCase =
-    SMILE_PREVIEW_CASES.find((item) => item.id === activeCaseId) ??
-    SMILE_PREVIEW_CASES[0];
+  const [sliderValue, setSliderValue] = useState(50);
 
   return (
     <section
@@ -78,7 +27,7 @@ export default function BeforeAfterShowcase() {
           <div className="max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-wider text-[#E6C76A] sm:text-sm">
               {locale === 'en'
-                ? 'INTERACTIVE SMILE COMPARISON'
+                ? 'REAL CLINICAL BEFORE & AFTER'
                 : 'مقارنة تفاعلية قبل وبعد'}
             </p>
             <h2
@@ -86,32 +35,40 @@ export default function BeforeAfterShowcase() {
               className="mt-2 text-2xl font-bold text-[#F7F3E9] sm:text-3xl"
             >
               {locale === 'en'
-                ? 'Interactive Smile Shade Preview'
-                : 'معاينة تفاعلية لتأثير تجميل وتبييض الأسنان'}
+                ? 'Authentic Before & After Smile Transformation'
+                : 'نتيجة حقيقية قبل وبعد العلاج في عيادة نوفا'}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-[#C8BFA8]">
-              {locale === 'en' ? activeCase.summaryEn : activeCase.summaryAr}
+              {locale === 'en'
+                ? 'Drag the slider left and right to compare this real case of anterior tooth restoration and natural aesthetic smile alignment.'
+                : 'اسحب المؤشر يميناً ويساراً لمعاينة التحوّل الفعلي في تعويض الأسنان الأمامية المفقودة وتجميل الابتسامة بمظهر طبيعي متناسق.'}
             </p>
           </div>
 
-          <div className="inline-flex flex-wrap gap-2">
-            {SMILE_PREVIEW_CASES.map((item) => {
-              const selected = item.id === activeCase.id;
+          <div
+            role="group"
+            aria-label={
+              locale === 'en' ? 'Quick comparison positions' : 'أوضاع المعاينة السريعة'
+            }
+            className="inline-flex flex-wrap gap-2"
+          >
+            {PRESET_VIEWS.map((preset) => {
+              const selected =
+                (preset.id === 'before' && sliderValue >= 85) ||
+                (preset.id === 'after' && sliderValue <= 15) ||
+                (preset.id === 'split' && sliderValue > 15 && sliderValue < 85);
               return (
                 <button
-                  key={item.id}
+                  key={preset.id}
                   type="button"
-                  onClick={() => {
-                    setActiveCaseId(item.id);
-                    setSliderValue(52);
-                  }}
+                  onClick={() => setSliderValue(preset.value)}
                   className={`rounded-full px-4 py-2 text-xs font-bold transition-colors cursor-pointer ${
                     selected
                       ? 'bg-[#D4AF37] text-[#080808]'
                       : 'border border-[#D4AF37]/30 bg-[#161512] text-[#C8BFA8] hover:text-[#F7F3E9]'
                   }`}
                 >
-                  {locale === 'en' ? item.categoryEn : item.categoryAr}
+                  {locale === 'en' ? preset.labelEn : preset.labelAr}
                 </button>
               );
             })}
@@ -122,30 +79,40 @@ export default function BeforeAfterShowcase() {
           {/* Comparison Viewport (LTR locked so left/right percentage always aligns with clip-path & slider) */}
           <div
             dir="ltr"
-            className="relative mx-auto aspect-[16/9] max-h-[500px] w-full overflow-hidden rounded-[22px] border border-[#D4AF37]/20 bg-[#080808] select-none"
+            className="relative mx-auto aspect-[16/9] max-h-[540px] w-full overflow-hidden rounded-[22px] border border-[#D4AF37]/20 bg-[#080808] select-none"
           >
-            {/* Base layer: After */}
+            {/* Base layer: Real After Case */}
             <Image
-              src={smileImg}
-              alt={locale === 'en' ? activeCase.titleEn : activeCase.titleAr}
+              src={afterCaseImg}
+              alt={
+                locale === 'en'
+                  ? 'After anterior dental restoration at NOVA Dental Clinic'
+                  : 'النتيجة بعد تعويض وتجميل الأسنان الأمامية في عيادة نوفا'
+              }
               fill
+              priority
               sizes="(max-width: 1024px) 100vw, 1060px"
               referrerPolicy="no-referrer"
-              className={`object-cover ${activeCase.afterFilterClass}`}
+              className="object-cover"
             />
 
-            {/* Clipped Overlay: Before */}
+            {/* Clipped Overlay: Real Before Case */}
             <div
               className="absolute inset-0 overflow-hidden"
               style={{ clipPath: `inset(0 ${100 - sliderValue}% 0 0)` }}
             >
               <Image
-                src={smileImg}
-                alt={locale === 'en' ? activeCase.beforeLabelEn : activeCase.beforeLabelAr}
+                src={beforeCaseImg}
+                alt={
+                  locale === 'en'
+                    ? 'Before anterior dental restoration at NOVA Dental Clinic'
+                    : 'الحالة قبل تعويض وتجميل الأسنان الأمامية في عيادة نوفا'
+                }
                 fill
+                priority
                 sizes="(max-width: 1024px) 100vw, 1060px"
                 referrerPolicy="no-referrer"
-                className={`object-cover ${activeCase.beforeFilterClass}`}
+                className="object-cover"
               />
             </div>
 
@@ -161,28 +128,24 @@ export default function BeforeAfterShowcase() {
             </div>
 
             {/* Corner Badges */}
-            <span className="pointer-events-none absolute top-4 left-4 z-10 rounded-full border border-white/15 bg-[#080808]/80 px-3.5 py-1 text-xs font-bold text-[#C8BFA8] backdrop-blur-sm">
-              {locale === 'en'
-                ? activeCase.beforeLabelEn
-                : activeCase.beforeLabelAr}
+            <span className="pointer-events-none absolute top-4 left-4 z-10 rounded-full border border-white/15 bg-[#080808]/80 px-3.5 py-1 text-xs font-bold text-[#F7F3E9] backdrop-blur-sm">
+              {locale === 'en' ? 'Before' : 'قبل العلاج'}
             </span>
             <span className="pointer-events-none absolute top-4 right-4 z-10 rounded-full border border-[#D4AF37]/45 bg-[#1B1810]/90 px-3.5 py-1 text-xs font-bold text-[#E6C76A] backdrop-blur-sm">
-              {locale === 'en'
-                ? activeCase.afterLabelEn
-                : activeCase.afterLabelAr}
+              {locale === 'en' ? 'After' : 'بعد العلاج'}
             </span>
 
             {/* Accessible Interactive Range Overlay */}
             <input
               type="range"
-              min={5}
-              max={95}
+              min={2}
+              max={98}
               value={sliderValue}
               onChange={(e) => setSliderValue(Number(e.target.value))}
               aria-label={
                 locale === 'en'
                   ? 'Before and after comparison slider'
-                  : 'مؤشر المقارنة بين قبل وبعد'
+                  : 'مؤشر المقارنة بين قبل وبعد العلاج'
               }
               className="absolute inset-0 z-20 h-full w-full cursor-ew-resize opacity-0"
             />
@@ -190,12 +153,14 @@ export default function BeforeAfterShowcase() {
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-[#9E9580]">
             <span className="font-semibold text-[#F7F3E9]">
-              {locale === 'en' ? activeCase.titleEn : activeCase.titleAr}
+              {locale === 'en'
+                ? 'Real Case — Anterior Teeth Restoration & Aesthetic Harmony'
+                : 'حالة فعلية — تعويض الأسنان الأمامية المفقودة وتناسق الابتسامة'}
             </span>
             <span>
               {locale === 'en'
-                ? 'Visual shade preview — individual clinical outcomes vary by diagnosis.'
-                : 'معاينة بصرية توضيحية لدرجة التفتيح — تختلف النتائج الفعلية حسب التشخيص الطبي لكل حالة.'}
+                ? 'Clinical result photographed at NOVA Dental Clinic — individual plans vary by diagnosis.'
+                : 'صورة حالة فعلية من عيادة نوفا لطب الأسنان — تختلف خطة العلاج والنتيجة حسب التشخيص الطبي لكل حالة.'}
             </span>
           </div>
         </div>
